@@ -120,61 +120,45 @@ if [[ $# -lt 5  && $1 != "-h" && $1 != "--help" && $1 != "--citation" ]]; then
 	exit 2
 fi
 
-#Get parameters
-while [[ "$1" > 0 ]]; do
+# Get parameters
+while [[ $# -gt 0 ]]; do
 	case $1 in
-		-i | --input_folder)
-			shift
-			INPUT_FOLDER=$1
-			shift
+		-i|--input_folder)
+			INPUT_FOLDER="$2"
+			shift 2
 			;;
-		-fp | --forward_primer)
-			shift
-			FORWARD_PRIMER=$1
-			shift
+		-fp|--forward_primer)
+			FORWARD_PRIMER="$2"
+			shift 2
 			;;
-		-rp | --reverse_primer)
-			shift
-			REVERSE_PRIMER=$1
-			shift
+		-rp|--reverse_primer)
+			REVERSE_PRIMER="$2"
+			shift 2
 			;;
-		-n | --minimum_length)
-			shift
-			MINIMUM_LENGTH=$1
-			shift
+		-n|--minimum_length)
+			MINIMUM_LENGTH="$2"
+			shift 2
 			;;
-		-x | --maximum_length)
-			shift
-			MAXIMUM_LENGTH=$1
-			shift
+		-x|--maximum_length)
+			MAXIMUM_LENGTH="$2"
+			shift 2
 			;;
-		-k | --keep_files)
-			shift
-			KEEPF=$1
-			shift
+		-k|--keep_files)
+			KEEPF="$2"
+			shift 2
 			;;
-		-v | --verbose)
-			shift
-			VERBOSE=$1
-			shift
+		-v|--verbose)
+			VERBOSE="$2"
+			shift 2
 			;;
-		-f | --force)
-			shift
-			FORCE=$1
-			shift
-			;;
-		-h | --help)
-			usage
-			exit
-			;;
-		--citation)
-			citation
-			exit
+		-f|--force)
+			FORCE="$2"
+			shift 2
 			;;
 		*)
-			echo $1
-			echo "ERROR: Missing parameter."
-			exit
+			echo "Unknown parameter: $1"
+			usage
+			exit 1
 			;;
 	esac
 done

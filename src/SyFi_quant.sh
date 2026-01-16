@@ -122,63 +122,40 @@ if [[ $# -lt 2  && $1 != "-h" && $1 != "--help" && $1 != "--citation" && $1 != "
 fi
 
 #Get parameters
-while [[ "$1" > 0 ]]; do
+while [[ $# -gt 0 ]]; do
 	case $1 in
-		-i | --read_folder)
-			shift
-			READ_FOLDER=$1
-			shift
+		-i|--read_folder)
+			READ_FOLDER="$2"
+			shift 2
 			;;
-		-f | --fingerprint_folder)
-			shift
-			FINGERPRINT_FOLDER=$1
-			shift
+		-f|--fingerprint_folder)
+			FINGERPRINT_FOLDER="$2"
+			shift 2
 			;;
-		-r | --read_type)
-			shift
-			READ_TYPE=$1
-			shift
+		-r|--read_type)
+			READ_TYPE="$2"
+			shift 2
 			;;
-		-m | --minscorefraction)
-			shift
-			MINSCOREFRACTION=$1
-			shift
+		-m|--minscorefraction)
+			MINSCOREFRACTION="$2"
+			shift 2
 			;;
-		-t | --threads)
-			shift
-			THREADS=$1
-			shift
+		-t|--threads)
+			THREADS="$2"
+			shift 2
 			;;
-		-k | --keep_files)
-			shift
-			KEEPF=$1
-			shift
+		-k|--keep_files)
+			KEEPF="$2"
+			shift 2
 			;;
-		-v | --verbose)
-			shift
-			VERBOSE=$1
-			shift
-			;;
-		-h | --help)
-			usage
-			exit
-			;;
-		--citation)
-			citation
-			exit
-			;;
-		--folder_structure)
-			folder_structure
-			exit
-			;;
-		--marker_copy_number_format)
-			marker_copy_number_format
-			exit
+		-v|--verbose)
+			VERBOSE="$2"
+			shift 2
 			;;
 		*)
-			echo $1
-			echo "ERROR: Missing parameter."
-			exit
+			echo "Unknown parameter: $1"
+			usage
+			exit 1
 			;;
 	esac
 done

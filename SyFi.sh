@@ -120,43 +120,32 @@ if [[ $# -lt 1  && $1 != "-h" && $1 != "--help" && $1 != "help" && $1 != "citati
 	exit 2
 fi
 
-#Get parameters
-while [[ "$1" > 0 ]]; do
-	case $1 in
-		main)
-			shift
-			main_module "$@"
-			exit
-			;;
-		amplicon)
-			shift
-			amplicon_module "$@"
-			exit
-			;;
-		quant)
-			shift
-			quant_module "$@"
-			exit
-			;;
-		structure)
-			folder_structure
-			exit
-			;;
-		citation)
-			citation
-			exit
-			;;
-		help)
-			usage
-			exit
-			;;
-		*)
-			echo $1
-			echo "ERROR: Invalid argument."
-			exit
-			;;
-	esac
-done
+# Get module and pass parameters
+case $1 in
+	main)
+		shift
+		main_module "$@"
+		;;
+	amplicon)
+		shift
+		amplicon_module "$@"
+		;;
+	quant)
+		shift
+		quant_module "$@"
+		;;
+	help|-h|--help)
+		usage
+		;;
+	citation)
+		citation
+		;;
+	*)
+		usage
+		exit 2
+		;;
+esac
+
 
 # trap ctrl-c and call ctrl_c()
 trap ctrl_c INT

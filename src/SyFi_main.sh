@@ -143,80 +143,53 @@ if [[ $# -lt 4  && $1 != "-h" && $1 != "--help" && $1 != "-c" && $1 != "--citati
 	exit 2
 fi
 
-#Get parameters
-while [[ "$1" > 0 ]]; do
+# Get parameters
+while [[ $# -gt 0 ]]; do
 	case $1 in
-		-i | --input-folder)
-			shift
-			INPUT_FOLDER=$1
-			shift
+		-i|--input-folder)
+			INPUT_FOLDER="$2"
+			shift 2
 			;;
-		-s | --search-target)
-			shift
-			SEARCH_TARGET=$1
-			shift
+		-s|--search-target)
+			SEARCH_TARGET="$2"
+			shift 2
 			;;
-		-l | --len-deviation)
-			shift
-			BPDEV=$1
-			shift
+		-l|--len-deviation)
+			BPDEV="$2"
+			shift 2
 			;;
-		-c | --cutoff)
-			shift
-			CUTOFF=$1
-			shift
+		-c|--cutoff)
+			CUTOFF="$2"
+			shift 2
 			;;
-		--fasta-extension)
-			shift
-			FAEXT=$1
-			shift
+		-t|--threads)
+			THREADS="$2"
+			shift 2
 			;;
-		--fastq-extension)
-			shift
-			FQEXT=$1
-			shift
+		-m|--mem)
+			MEM="$2"
+			shift 2
 			;;
-		-t | --threads)
-			shift
-			THREADS=$1
-			shift
+		-k|--keep-files)
+			KEEPF="$2"
+			shift 2
 			;;
-		-m | --mem)
-			shift
-			MEM=$1
-			shift
+		-v|--verbose)
+			VERBOSE="$2"
+			shift 2
 			;;
-		-k | --keep-files)
-			shift
-			KEEPF=$1
-			shift
+		-f|--force)
+			FORCE="$2"
+			shift 2
 			;;
-		-v | --verbose)
-			shift
-			VERBOSE=$1
-			shift
-			;;
-		-f | --force)
-			shift
-			FORCE=$1
-			shift
-			;;
-		-h | --help)
+		-h|--help)
 			usage
 			exit
 			;;
-		--citation)
-			citation
-			exit
-			;;
-		--folder-structure)
-			folder_structure
-			exit
-			;;
 		*)
-			echo $1
-			echo "ERROR: Missing parameter."
-			exit
+			echo "Unknown parameter: $1"
+			usage
+			exit 1
 			;;
 	esac
 done
