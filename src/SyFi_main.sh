@@ -652,7 +652,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		touch ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 	else
 		# Touch Log File
-		mkdir -p ${OUTPUT_FOLDER}/01-Logsmain
+		mkdir -p ${OUTPUT_FOLDER}/01-Logs/main
 		touch ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 	fi
 
