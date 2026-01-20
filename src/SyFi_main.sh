@@ -101,7 +101,7 @@ function usage()
 	echo "  -m | --memory           Memory in GBs (default: 8GB)."
 	printf "\n"
 	echo "# Output options:"
-	echo "  -o  | --output_dir 						 Optional output folder, otherwise it will be written to current working directory"
+	echo "  -o  | --OUTPUT_FOLDER 						 Optional output folder, otherwise it will be written to current working directory"
 	echo "  -k | --keep-files       Keep temporary files [0: Minimum, 1: BAM's, or 2: All] (default: 0)."
 	echo "  -v | --verbose          Verbose mode [0: Quiet 1: Samples, or 2: All] (default: 2)."
 	echo "  -f | --force            Force re-computation of computed samples [0: None, 1: All, 2: Skipped, or 3: Failed] (default: 0)."
@@ -145,13 +145,13 @@ if [[ $# -lt 4  && $1 != "-h" && $1 != "--help" && $1 != "-c" && $1 != "--citati
 fi
 
 # Default variables
-OUTPUT_DIR="." # Default to current directory
+OUTPUT_FOLDER="." # Default to current directory
 
 # Get parameters
 while [[ $# -gt 0 ]]; do
 	case $1 in
-		-o|--output_dir)
-			OUTPUT_DIR="$2"
+		-o|--OUTPUT_FOLDER)
+			OUTPUT_FOLDER="$2"
 			shift 2
 			;;
 		-i|--input-folder)
@@ -304,7 +304,7 @@ function variantCalling() {
 	reference_fasta=$2
 	reference_dict=$3
 	input_bam=$4
-	output_dir=$5
+	OUTPUT_FOLDER=$5
 	threads=$6
 
 	# Intro messages
@@ -314,17 +314,17 @@ function variantCalling() {
 	# Mark duplicates (Mapping is already done)
 	printf "\n"
 	echo "Mark BAM duplicates"
-	markDuplicates ${bam_file} ${output_dir} ${threads}
+	markDuplicates ${bam_file} ${OUTPUT_FOLDER} ${threads}
 
 	# Haplotype caller
 	printf "\n"
 	echo "Haplotype calling"
-	haplotypeCaller ${reference_fasta} ${reference_dict} ${output_dir} ${input_bam}
+	haplotypeCaller ${reference_fasta} ${reference_dict} ${OUTPUT_FOLDER} ${input_bam}
 
 	# Join genotyping
 	printf "\n"
 	echo "Join genotyping"
-	jointGenotype ${reference_fasta} ${output_dir} ${threads}
+	jointGenotype ${reference_fasta} ${OUTPUT_FOLDER} ${threads}
 
 }
 
@@ -332,19 +332,19 @@ function variantCalling() {
 function markDuplicates() {
 	# Arguments
 	bam_file=$1
-	output_dir=$2
+	OUTPUT_FOLDER=$2
 	threads=$3
 
 	# Variables
 	sample=$(basename ${bam_file} | sed 's/.rebuild.sort.bam//g')
-	output_fn="${output_dir}/mapped_filtered/${sample}_stats.txt"
+	output_fn="${OUTPUT_FOLDER}/mapped_filtered/${sample}_stats.txt"
 
 	# Execution
-	picard MarkDuplicates -I ${bam_file} -O ${output_dir}/mapped_filtered/${sample}.filtered.bam -M ${output_dir}/mapped_filtered/${sample}.filtered.bam-metrics.txt -AS --REMOVE_DUPLICATES true --VERBOSITY ERROR --CREATE_INDEX true --TMP_DIR ${output_dir}/mapped_filtered
+	picard MarkDuplicates -I ${bam_file} -O ${OUTPUT_FOLDER}/mapped_filtered/${sample}.filtered.bam -M ${OUTPUT_FOLDER}/mapped_filtered/${sample}.filtered.bam-metrics.txt -AS --REMOVE_DUPLICATES true --VERBOSITY ERROR --CREATE_INDEX true --TMP_DIR ${OUTPUT_FOLDER}/mapped_filtered
 
 	# Plot BAM
 	samtools stats -d ${bam_file} > ${output_fn}
-	plot-bamstats -p ${OUTPUT_DIR}//mapped_filtered/ ${output_fn}
+	plot-bamstats -p ${OUTPUT_FOLDER}//mapped_filtered/ ${output_fn}
 }
 
 # FUNCTION: Haplotype Caller
@@ -352,7 +352,7 @@ function haplotypeCaller() {
 	# Arguments
 	reference_fasta=$1
 	reference_dict=$2
-	output_dir=$3
+	OUTPUT_FOLDER=$3
 	input_bam=$4
 
 	# Variables (-t genomic -m joint -a False -i False)
@@ -366,33 +366,33 @@ function haplotypeCaller() {
 	picard CreateSequenceDictionary -R ${reference_fasta} -O ${reference_dict}
 
 	# Add read group to BAM
-	picard AddOrReplaceReadGroups -I ${input_bam} -O ${output_dir}/genotyped/${sample}.filtered.readgroup.bam -LB lib1 -PL ILLUMINA -PU unit1 -SM ${sample}
-	samtools index -b ${output_dir}/genotyped/${sample}.filtered.readgroup.bam ${output_dir}/genotyped/${sample}.filtered.readgroup.bai -@ ${threads}
+	picard AddOrReplaceReadGroups -I ${input_bam} -O ${OUTPUT_FOLDER}/genotyped/${sample}.filtered.readgroup.bam -LB lib1 -PL ILLUMINA -PU unit1 -SM ${sample}
+	samtools index -b ${OUTPUT_FOLDER}/genotyped/${sample}.filtered.readgroup.bam ${OUTPUT_FOLDER}/genotyped/${sample}.filtered.readgroup.bai -@ ${threads}
 
 	# Index fasta
 	samtools faidx ${reference_fasta}
 
 	# Haplotypes
-	gatk3 -T HaplotypeCaller -ERC ${erc_mode} -ploidy ${ploidy} -stand_call_conf ${min_thr} -I ${output_dir}/genotyped/${sample}.filtered.readgroup.bam -o ${output_dir}/genotyped/${sample}.g.vcf.gz -R ${reference_fasta} --output_mode ${output_mode}
+	gatk3 -T HaplotypeCaller -ERC ${erc_mode} -ploidy ${ploidy} -stand_call_conf ${min_thr} -I ${OUTPUT_FOLDER}/genotyped/${sample}.filtered.readgroup.bam -o ${OUTPUT_FOLDER}/genotyped/${sample}.g.vcf.gz -R ${reference_fasta} --output_mode ${output_mode}
 }
 
 # FUNCTION: Joint Genotyping
 function jointGenotype() {
 	# Arguments
 	reference_fasta=$1
-	output_dir=$2
+	OUTPUT_FOLDER=$2
 	threads=$3
 
 	# Variables
 	sample=$(basename ${reference_fasta} | sed 's/.fasta//g')
-	input_gvcf="${output_dir}/genotyped/${sample}.g.vcf.gz"
-	intervals_fn="${output_dir}/reference/intervals.list"
-	workspace_dir="${output_dir}/variants/db_workspace"
+	input_gvcf="${OUTPUT_FOLDER}/genotyped/${sample}.g.vcf.gz"
+	intervals_fn="${OUTPUT_FOLDER}/reference/intervals.list"
+	workspace_dir="${OUTPUT_FOLDER}/variants/db_workspace"
 	merge_intervals="--merge-input-intervals"
 	database=${workspace_dir}
-	output_vcf="${output_dir}/variants/${sample}.vcf.gz"
-	comp_fn="${output_dir}/variants/${sample}.vchk"
-	plot_dir="${output_dir}/variants/${sample}/"
+	output_vcf="${OUTPUT_FOLDER}/variants/${sample}.vcf.gz"
+	comp_fn="${OUTPUT_FOLDER}/variants/${sample}.vchk"
+	plot_dir="${OUTPUT_FOLDER}/variants/${sample}/"
 
 	# Create intervals
 	cat ${OUTPUT_FOLDER}/20-Alignment/${sample}/${sample}.fasta.fai | awk '{print $1":1-"$2}' > ${intervals_fn}
@@ -458,7 +458,7 @@ function fingerPrint() {
 	variants=$3 # Yes/No
 
 	# Create folder
-	mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/70-Fingerprints/${subf}
+	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/70-Fingerprints/${subf}
 
 	if [ $mode == "unique" ];then
 		# Log
@@ -651,7 +651,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		touch ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
 	else
 		# Touch Log File
-		mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/01-Logsmain
+		mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/01-Logsmain
 		touch ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
 	fi
 
@@ -682,7 +682,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	if [ ${VERBOSE} -eq 2 ]; then printf "Performing: Mapping; "; fi
 
 	# Create folder
-	mkdir -p ${OUTPUT_DIR}/10-Blast ${OUTPUT_FOLDER}/11-Sequences/${subf}
+	mkdir -p ${OUTPUT_FOLDER}/10-Blast ${OUTPUT_FOLDER}/11-Sequences/${subf}
 	# Blastn
 	blastn -query ${INPUT_FOLDER}/${subf}/${subf}.${FAEXT} -subject ${SEARCH_TARGET} -strand both -outfmt "6 std qseq" > ${OUTPUT_FOLDER}/10-Blast/${subf}.tsv
 	printf ">${subf}\n$(cat ${OUTPUT_FOLDER}/10-Blast/${subf}.tsv | sort -n -k4 | tail -n 1 | cut -f 13 | sed 's/-//g')" > ${OUTPUT_FOLDER}/11-Sequences/${subf}/${subf}.fasta
@@ -701,7 +701,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	## --------------------------------------------------
 
 	# Create folder
-	mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/20-Alignment/${subf}
+	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/20-Alignment/${subf}
 
 	if [ ${VERBOSE} -eq 2 ]; then printf "Alignment; "; fi
 
@@ -767,7 +767,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	fi
 	
 	# Define target without flanking regions
-	mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/20-Alignment/${subf}/flanking
+	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/20-Alignment/${subf}/flanking
 	blastn -subject ${SEARCH_TARGET} -query ${OUTPUT_FOLDER}/20-Alignment/${subf}/spades/contigs.seqtk.fasta -outfmt "6 std sseq qlen" > ${OUTPUT_FOLDER}/20-Alignment/${subf}/flanking/${subf}.target.tsv
 
 	# Size select blast hits
@@ -819,8 +819,8 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	fi
 
 	# Create folders
-	mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/30-VariantCalling/${subf}
-	mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/30-VariantCalling/${subf}/mapped_filtered ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/genotyped ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/reference ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/variants
+	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/30-VariantCalling/${subf}
+	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/30-VariantCalling/${subf}/mapped_filtered ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/genotyped ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/reference ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/variants
 
 	if [ ${VERBOSE} -eq 2 ]; then printf "Variant calling; "; fi
 
@@ -833,7 +833,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		# MULTIPLE HAPLOTYPES
 
 		# Create folder
-		mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/40-Phasing/${subf}
+		mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/40-Phasing/${subf}
 
 		if [ ${VERBOSE} -eq 2 ]; then printf "Phasing; "; fi
 
@@ -854,7 +854,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		fi
 
 		# Haplotype length correction: remove short matches
-		mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/50-haplotypes/${subf}
+		mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/50-haplotypes/${subf}
 		seqtk seq -L ${min_tl} <(cat ${OUTPUT_FOLDER}/40-Phasing/${subf}/${subf}_assembly_h*.fasta) > ${OUTPUT_FOLDER}/50-haplotypes/${subf}/${subf}_haplotypes.fasta 
 
 		# Rename headers
@@ -891,7 +891,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		if [ $(grep "^>" ${OUTPUT_FOLDER}/50-haplotypes/${subf}/clean_${subf}_haplotypes.fasta | wc -l) -gt 1 ]
 		then
 			# Create folder
-			mkdir -p ${OUTPUT_DIR}/60-Integration
+			mkdir -p ${OUTPUT_FOLDER}/60-Integration
 
 			if [ ${VERBOSE} -eq 2 ]; then printf "Abundance ratio; "; fi
 
@@ -963,7 +963,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 			# --------------- #
 
 			# Create folder
-			mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/60-Integration/${subf}
+			mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/60-Integration/${subf}
 
 			# Copy number
 			copyNumber ${INPUT_FOLDER} ${subf}
@@ -977,7 +977,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 			printf "\n\n### Integration ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
 
 			# Create folder
-			mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/60-Integration/${subf}
+			mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/60-Integration/${subf}
 
 			# Integrate only step II 
 			Rscript ${INTEGRATION} -r "None" -c ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv -i ${subf} -m 'unique' &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
@@ -1001,7 +1001,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 		# Kallisto (Applied to strains with two recovered targets - 2 haplotypes)
 		# Create folder
-		mkdir -p ${OUTPUT_DIR}/60-Integration
+		mkdir -p ${OUTPUT_FOLDER}/60-Integration
 
 		if [ ${VERBOSE} -eq 2 ]; then printf "Abundance ratio; "; fi
 
@@ -1074,7 +1074,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		# --------------- #
 
 		# Create folder
-		mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/60-Integration/${subf}
+		mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/60-Integration/${subf}
 
 		# Copy number
 		copyNumber ${INPUT_FOLDER} ${subf}
@@ -1088,7 +1088,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		printf "\n\n### Integration ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
 
 		# Create folder
-		mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/60-Integration/${subf}
+		mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/60-Integration/${subf}
 
 		# Integrate only step II 
 		Rscript ${INTEGRATION} -r "None" -c ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv -i ${subf} -m 'unique' &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt

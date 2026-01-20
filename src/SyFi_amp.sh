@@ -90,7 +90,7 @@ function usage()
 	printf "\n"
 	echo "${bold}OPTIONAL:${normal}"
 	echo "# Output options:"
-	echo "  -o  | --output_dir 						 Optional output folder, otherwise it will be written to current working directory"
+	echo "  -o  | --OUTPUT_FOLDER 						 Optional output folder, otherwise it will be written to current working directory"
 	echo "  -k  | --keep_files       Keep temporary files [0: Minimum, 1: BAM's, or 2: All] (default: 0)."
 	echo "  -v  | --verbose          Verbose mode [0: Quiet 1: Samples, or 2: All] (default: 2)."
 	echo "  -f  | --force            Force re-computation of computed samples [0: None, 1: All, 2: Skipped, or 3: Failed] (default: 0)."
@@ -122,13 +122,13 @@ if [[ $# -lt 5  && $1 != "-h" && $1 != "--help" && $1 != "--citation" ]]; then
 fi
 
 # Default variables
-OUTPUT_DIR="." # Default to current directory
+OUTPUT_FOLDER="." # Default to current directory
 
 # Get parameters
 while [[ $# -gt 0 ]]; do
 	case $1 in
-		-o|--output_dir)
-			OUTPUT_DIR="$2"
+		-o|--OUTPUT_FOLDER)
+			OUTPUT_FOLDER="$2"
 			shift 2
 			;;
 		-i|--input_folder)
@@ -186,7 +186,7 @@ if [[ -f ${OUTPUT_FOLDER}/01-Logs/amplicon/log_${DATE}.txt ]]; then
 	touch ${OUTPUT_FOLDER}/01-Logs/amplicon/log_${DATE}.txt
 else
 	# Touch Log File
-	mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/01-Logs/amplicon
+	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/01-Logs/amplicon
 	touch ${OUTPUT_FOLDER}/01-Logs/amplicon/log_${DATE}.txt
 fi
 
@@ -280,7 +280,7 @@ function amplicon() {
 	maxlength=$6
 
 	# Create folder
-	mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/71-Amplicon/${subf}
+	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/71-Amplicon/${subf}
 
 	if [ $mode == "unique" ];then
 	 # Log
@@ -457,7 +457,7 @@ function CleanFiles() {
 # Call logo
 logo ${INPUT_FOLDER} ${FORWARD_PRIMER} ${REVERSE_PRIMER} ${MINIMUM_LENGTH} ${MAXIMUM_LENGTH} ${KEEPF} ${VERBOSE} ${FORCE}
 
-mkdir -p ${OUTPUT_DIR}/71-Amplicon
+mkdir -p ${OUTPUT_FOLDER}/71-Amplicon
 
 for subf in $(ls ${INPUT_FOLDER}); do
 

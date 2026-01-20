@@ -90,7 +90,7 @@ function usage()
 	echo "  -m  | --minscorefraction                 Percentage identity score that Salmon uses for pseudoaligning metagenomic reads to the SyFi-generated fingerprints (default: 0.95)."
 	printf "\n"
 	echo "# Output options:"
-	echo "  -o  | --output_dir 						 Optional output folder, otherwise it will be written to current working directory"
+	echo "  -o  | --OUTPUT_FOLDER 						 Optional output folder, otherwise it will be written to current working directory"
 	echo "  -k  | --keep_files                       Keep temporary files [0: Minimum, 1: Salmon output, or 2: All] (default: 0)."
 	echo "  -v  | --verbose                          Verbose mode [0: Quiet 1: Samples, or 2: All] (default: 2)."
 	printf "\n"
@@ -123,13 +123,13 @@ if [[ $# -lt 2  && $1 != "-h" && $1 != "--help" && $1 != "--citation" && $1 != "
 fi
 
 # Default variables
-OUTPUT_DIR="." # Default to current directory
+OUTPUT_FOLDER="." # Default to current directory
 
 #Get parameters
 while [[ $# -gt 0 ]]; do
 	case $1 in
-		-o|--output_dir)
-			OUTPUT_DIR="$2"
+		-o|--OUTPUT_FOLDER)
+			OUTPUT_FOLDER="$2"
 			shift 2
 			;;
 		-i|--read_folder)
@@ -267,13 +267,13 @@ function pseudoalignment() {
 	if [ ${VERBOSE} -ge 1 ]; then echo ${sample}; fi
 	if [ ${VERBOSE} -eq 2 ]; then printf "Performing pseudoalignment of reads to fingerprints"; fi
 
-	mkdir -p ${OUTPUT_DIR}/${OUTPUT_DIR}/80-Pseudoalignment/${sample}
+	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/80-Pseudoalignment/${sample}
 
 	if [ ${readtype} = "paired" ]; then
-		 salmon quant -i ${fingerprints} -l IU -1 ${read_folder}/${sample}/${sample}_R1.fastq.gz -2 ${read_folder}/${sample}/${sample}_R2.fastq.gz --validateMappings -o ${OUTPUT_DIR}/80-Pseudoalignment/${sample} --minScoreFraction ${minscorefraction} --writeMappings ${OUTPUT_DIR}/80-Pseudoalignment/${sample}/salmon_alignments.sam --writeUnmappedNames -p ${threads} &> /dev/null
+		 salmon quant -i ${fingerprints} -l IU -1 ${read_folder}/${sample}/${sample}_R1.fastq.gz -2 ${read_folder}/${sample}/${sample}_R2.fastq.gz --validateMappings -o ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample} --minScoreFraction ${minscorefraction} --writeMappings ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample}/salmon_alignments.sam --writeUnmappedNames -p ${threads} &> /dev/null
 
 	elif [ ${readtype} = "single" ]; then
-		 salmon quant -i ${fingerprints} -l U -1 ${read_folder}/${sample}/${sample}.fastq.gz --validateMappings -o ${OUTPUT_DIR}/80-Pseudoalignment/${sample} --minScoreFraction ${minscorefraction} --writeMappings ${OUTPUT_DIR}/80-Pseudoalignment/${sample}/salmon_alignments.sam -p ${threads} &> /dev/null
+		 salmon quant -i ${fingerprints} -l U -1 ${read_folder}/${sample}/${sample}.fastq.gz --validateMappings -o ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample} --minScoreFraction ${minscorefraction} --writeMappings ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample}/salmon_alignments.sam -p ${threads} &> /dev/null
 	fi
 
 	if [ ${VERBOSE} -eq 2 ]; then printf "; Done\n"; fi
@@ -342,7 +342,7 @@ normalize_isolate_counts() {
 logo ${READ_FOLDER} ${FINGERPRINT_FOLDER} ${READ_TYPE} ${MINSCOREFRACTION} ${THREADS} ${KEEPF} ${VERBOSE}
 
 #Make a new directory
-mkdir -p ${OUTPUT_DIR}/80-Pseudoalignment 90-Output
+mkdir -p ${OUTPUT_FOLDER}/80-Pseudoalignment 90-Output
 
 #----------------------------- #
 # Fingerprint index generation #
@@ -360,25 +360,25 @@ for subf in $(ls ${FINGERPRINT_FOLDER}); do
 		touch ${OUTPUT_FOLDER}/01-Logs/quant/log_${subf}.txt
 	else
 		# Touch Log File
-		mkdir -p ${OUTPUT_DIR}/${OUTPUT_FOLDER}/01-Logs/quant
+		mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/01-Logs/quant
 		touch ${OUTPUT_FOLDER}/01-Logs/quant/log_${subf}.txt
 	fi
 
 	if [ -f "${fingerprintfolder}/${subf}/${subf}_all_haplotypes.fasta" ]; then
-		cat ${fingerprintfolder}/${subf}/${subf}_all_haplotypes.fasta >> ${OUTPUT_DIR}/90-Output/SyFi_Fingerprints.fasta
-		printf "\n" >> ${OUTPUT_DIR}/90-Output/SyFi_Fingerprints.fasta
+		cat ${fingerprintfolder}/${subf}/${subf}_all_haplotypes.fasta >> ${OUTPUT_FOLDER}/90-Output/SyFi_Fingerprints.fasta
+		printf "\n" >> ${OUTPUT_FOLDER}/90-Output/SyFi_Fingerprints.fasta
 	else
 		printf "Warning: ${fingerprintfolder}/${subf}/${subf}_all_haplotypes.fasta is missing.\n" >>  ${OUTPUT_FOLDER}/01-Logs/quant/log_${subf}.txt
 	fi
 done
 
 #Remove empty lines, place headers to isolate names
-sed -i '/^$/d' ${OUTPUT_DIR}/90-Output/SyFi_Fingerprints.fasta
-sed -i 's/_all_haplotypes//' ${OUTPUT_DIR}/90-Output/SyFi_Fingerprints.fasta
-sed -i 's/_ALL_HAPLOTYPES//' ${OUTPUT_DIR}/90-Output/SyFi_Fingerprints.fasta
+sed -i '/^$/d' ${OUTPUT_FOLDER}/90-Output/SyFi_Fingerprints.fasta
+sed -i 's/_all_haplotypes//' ${OUTPUT_FOLDER}/90-Output/SyFi_Fingerprints.fasta
+sed -i 's/_ALL_HAPLOTYPES//' ${OUTPUT_FOLDER}/90-Output/SyFi_Fingerprints.fasta
 
 #Build Salmon index
-salmon index -t ${OUTPUT_DIR}/90-Output/SyFi_Fingerprints.fasta -i Fingerprint_index -k 31 &>> ${OUTPUT_FOLDER}/01-Logs/quant/log_salmon.txt
+salmon index -t ${OUTPUT_FOLDER}/90-Output/SyFi_Fingerprints.fasta -i Fingerprint_index -k 31 &>> ${OUTPUT_FOLDER}/01-Logs/quant/log_salmon.txt
 Fingerprint_index="Fingerprint_index"
 
 #------------------------ #
@@ -386,7 +386,7 @@ Fingerprint_index="Fingerprint_index"
 #------------------------ #
 
 # SyFi copy number normalized
-cat Summary.tsv | cut -f1,11 | grep -v "#" | awk '{ $2 = int($2 + 0.5); print }' | sed '1i\isolate\tcopy_number' | sed 's/ /\t/g' >> ${OUTPUT_DIR}/90-Output/copy_number.tsv
+cat Summary.tsv | cut -f1,11 | grep -v "#" | awk '{ $2 = int($2 + 0.5); print }' | sed '1i\isolate\tcopy_number' | sed 's/ /\t/g' >> ${OUTPUT_FOLDER}/90-Output/copy_number.tsv
 
 #-----------------------------------------------------------#
 # Pseudoalignment of samples including confidence intervals #
@@ -406,9 +406,9 @@ for subf in $(ls ${READ_FOLDER}) ; do
 	      print read_id, tx, score
 	    }
 	  }
-	' ${OUTPUT_DIR}/80-Pseudoalignment/${sample}/salmon_alignments.sam > ${OUTPUT_DIR}/80-Pseudoalignment/${sample}/alignments.tsv
+	' ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample}/salmon_alignments.sam > ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample}/alignments.tsv
 
-	sort -k1,1 ${OUTPUT_DIR}/80-Pseudoalignment/${sample}/alignments.tsv > ${OUTPUT_DIR}/80-Pseudoalignment/${sample}/sorted_alignments.tsv
+	sort -k1,1 ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample}/alignments.tsv > ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample}/sorted_alignments.tsv
 
 	SCORE_EXP="1.0"
 
@@ -447,11 +447,11 @@ for subf in $(ls ${READ_FOLDER}) ; do
 	      printf "%-20s %-10d %-10.4f %-10.4f\n", tx, tx_count[tx], tx_sum[tx], avg
 	    }
 	  }
-	' ${OUTPUT_DIR}/80-Pseudoalignment/${sample}/sorted_alignments.tsv >> ${OUTPUT_DIR}/80-Pseudoalignment/${sample}/confidence_output.tsv
+	' ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample}/sorted_alignments.tsv >> ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample}/confidence_output.tsv
 
-	rm ${OUTPUT_DIR}/80-Pseudoalignment/${sample}/alignments.tsv
-	rm ${OUTPUT_DIR}/80-Pseudoalignment/${sample}/sorted_alignments.tsv
-	rm ${OUTPUT_DIR}/80-Pseudoalignment/${sample}/salmon_alignments.sam
+	rm ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample}/alignments.tsv
+	rm ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample}/sorted_alignments.tsv
+	rm ${OUTPUT_FOLDER}/80-Pseudoalignment/${sample}/salmon_alignments.sam
 done
 
 #------------------------------------------------- #
@@ -462,18 +462,18 @@ if [ ${VERBOSE} -eq 2 ]; then printf "\nCollect pseudoalignment results\n"; fi
 
 #Retrieve the pseudoaligment hits from Salmon
 for subf in $(ls ${READ_FOLDER}); do
-	cut -f 1,5 ${OUTPUT_DIR}/80-Pseudoalignment/${subf}/quant.sf > ${OUTPUT_DIR}/80-Pseudoalignment/${subf}/output.txt
+	cut -f 1,5 ${OUTPUT_FOLDER}/80-Pseudoalignment/${subf}/quant.sf > ${OUTPUT_FOLDER}/80-Pseudoalignment/${subf}/output.txt
 done
 
 # Concatenate the single Salmon outputs into a isolate count table
 # Create a variable with the list of files to process
-files=$(ls ${OUTPUT_DIR}/80-Pseudoalignment/*/output.txt)
+files=$(ls ${OUTPUT_FOLDER}/80-Pseudoalignment/*/output.txt)
 
 # Run paste.awk on these files
-awk -f src/paste.awk ${files} > ${OUTPUT_DIR}/90-Output/raw_output_table.txt
+awk -f src/paste.awk ${files} > ${OUTPUT_FOLDER}/90-Output/raw_output_table.txt
 
 #Remove header from Salmon output 
-sed -i '1d' ${OUTPUT_DIR}/90-Output/raw_output_table.txt
+sed -i '1d' ${OUTPUT_FOLDER}/90-Output/raw_output_table.txt
 
 #Add first line with the correct sample column headers
 samples_header="sample_id"
@@ -482,7 +482,7 @@ samples_header="sample_id"
 samples_header+="$(ls ${READ_FOLDER} | xargs -I{} printf "\t%s" {})"
 
 #Insert it into the microbiome table
-sed -i "1i $samples_header" ${OUTPUT_DIR}/90-Output/raw_output_table.txt
+sed -i "1i $samples_header" ${OUTPUT_FOLDER}/90-Output/raw_output_table.txt
 
 #--------------------------------- #
 # Normalize for marker copy number #
@@ -491,9 +491,9 @@ sed -i "1i $samples_header" ${OUTPUT_DIR}/90-Output/raw_output_table.txt
 if [ ${VERBOSE} -eq 2 ]; then printf "Normalize pseudoalignment results\n"; fi
 
 # SyFi normalized
-normalize_isolate_counts "${OUTPUT_DIR}/90-Output/raw_output_table.txt" "${OUTPUT_DIR}/90-Output/copy_number.tsv" "${OUTPUT_DIR}/90-Output/norm_output_table.txt"
-sed -i '1d' ${OUTPUT_DIR}/90-Output/norm_output_table.txt
-sed -i "1i $samples_header" ${OUTPUT_DIR}/90-Output/norm_output_table.txt
+normalize_isolate_counts "${OUTPUT_FOLDER}/90-Output/raw_output_table.txt" "${OUTPUT_FOLDER}/90-Output/copy_number.tsv" "${OUTPUT_FOLDER}/90-Output/norm_output_table.txt"
+sed -i '1d' ${OUTPUT_FOLDER}/90-Output/norm_output_table.txt
+sed -i "1i $samples_header" ${OUTPUT_FOLDER}/90-Output/norm_output_table.txt
 
 #-------------------------- #
 # Collect Confidence values #
@@ -503,18 +503,18 @@ if [ ${VERBOSE} -eq 2 ]; then printf "\nCollect confidence values of pseudoalign
 
 #Retrieve the confidence values of pseudoaligment hits from Salmon
 for subf in $(ls ${READ_FOLDER}); do
-        sed 's/  */\t/g' ${OUTPUT_DIR}/80-Pseudoalignment/${subf}/confidence_output.tsv | cut -f 1,4 > ${OUTPUT_DIR}/80-Pseudoalignment/${subf}/intermediate_conf_output.txt
+        sed 's/  */\t/g' ${OUTPUT_FOLDER}/80-Pseudoalignment/${subf}/confidence_output.tsv | cut -f 1,4 > ${OUTPUT_FOLDER}/80-Pseudoalignment/${subf}/intermediate_conf_output.txt
 done
 
 # Collate the Salmon confidence values of individual pseudoalignment runs
 # Create a variable with the list of files to process
-files=$(ls ${OUTPUT_DIR}/80-Pseudoalignment/*/intermediate_conf_output.txt)
+files=$(ls ${OUTPUT_FOLDER}/80-Pseudoalignment/*/intermediate_conf_output.txt)
 
 # Run paste.awk on these files
-awk -f src/paste.awk ${files} > ${OUTPUT_DIR}/90-Output/confidence_output_table.txt
+awk -f src/paste.awk ${files} > ${OUTPUT_FOLDER}/90-Output/confidence_output_table.txt
 
 #Remove header from Salmon output
-sed -i '1d' ${OUTPUT_DIR}/90-Output/confidence_output_table.txt
+sed -i '1d' ${OUTPUT_FOLDER}/90-Output/confidence_output_table.txt
 
 #Add first line with the correct sample column headers
 samples_header="sample_id"
@@ -523,20 +523,20 @@ samples_header="sample_id"
 samples_header+="$(ls ${READ_FOLDER} | xargs -I{} printf "\t%s" {})"
 
 #Insert it into the microbiome table
-sed -i "1i $samples_header" ${OUTPUT_DIR}/90-Output/confidence_output_table.txt
+sed -i "1i $samples_header" ${OUTPUT_FOLDER}/90-Output/confidence_output_table.txt
 
 #----------------------- #
 # Collect unmapped reads #
 #----------------------- #
 
-printf "Sample\tNo_mapped_reads\tNo_unmapped_reads\tproportion_mapped\n" > ${OUTPUT_DIR}/90-Output/unmapped_reads.txt
+printf "Sample\tNo_mapped_reads\tNo_unmapped_reads\tproportion_mapped\n" > ${OUTPUT_FOLDER}/90-Output/unmapped_reads.txt
 
 for subf in $(ls ${READ_FOLDER}); do
-    mapped=$(cut -f5 ${OUTPUT_DIR}/80-Pseudoalignment/${subf}/quant.sf | grep -v "NumReads" | awk '{sum += $1} END {print sum}')
-    unmapped=$(wc -l < ${OUTPUT_DIR}/80-Pseudoalignment/${subf}/aux_info/unmapped_names.txt)
+    mapped=$(cut -f5 ${OUTPUT_FOLDER}/80-Pseudoalignment/${subf}/quant.sf | grep -v "NumReads" | awk '{sum += $1} END {print sum}')
+    unmapped=$(wc -l < ${OUTPUT_FOLDER}/80-Pseudoalignment/${subf}/aux_info/unmapped_names.txt)
     total=$(awk -v m=$mapped -v u=$unmapped 'BEGIN {print m + u}')
     percentage=$(awk -v m=$mapped -v t=$total 'BEGIN {if (t > 0) printf "%.6f", m / t; else print "NaN"}')
-    printf "%s\t%d\t%d\t%s\n" "$subf" "$mapped" "$unmapped" "$percentage" >> ${OUTPUT_DIR}/90-Output/unmapped_reads.txt
+    printf "%s\t%d\t%d\t%s\n" "$subf" "$mapped" "$unmapped" "$percentage" >> ${OUTPUT_FOLDER}/90-Output/unmapped_reads.txt
 done
 
 #--------- #
@@ -545,7 +545,7 @@ done
 
 if [ ${KEEPF} -eq 0 ]; then
 	rm -r Fingerprint_index &> /dev/null
-	rm -r ${OUTPUT_DIR}/80-Pseudoalignment/*/aux_info ${OUTPUT_DIR}/80-Pseudoalignment/*/cmd_info.json  ${OUTPUT_DIR}/80-Pseudoalignment/*/lib_format_counts.json  ${OUTPUT_DIR}/80-Pseudoalignment/*/libParams  ${OUTPUT_DIR}/80-Pseudoalignment/*/logs &> /dev/null
+	rm -r ${OUTPUT_FOLDER}/80-Pseudoalignment/*/aux_info ${OUTPUT_FOLDER}/80-Pseudoalignment/*/cmd_info.json  ${OUTPUT_FOLDER}/80-Pseudoalignment/*/lib_format_counts.json  ${OUTPUT_FOLDER}/80-Pseudoalignment/*/libParams  ${OUTPUT_FOLDER}/80-Pseudoalignment/*/logs &> /dev/null
 fi
 
 if [ ${KEEPF} -eq 1 ]; then
