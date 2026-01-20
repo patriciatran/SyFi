@@ -458,7 +458,7 @@ function fingerPrint() {
 	variants=$3 # Yes/No
 
 	# Create folder
-	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/70-Fingerprints/${subf}
+	mkdir -p ${OUTPUT_FOLDER}/70-Fingerprints/${subf}
 
 	if [ $mode == "unique" ];then
 		# Log
@@ -651,7 +651,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		touch ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
 	else
 		# Touch Log File
-		mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/01-Logsmain
+		mkdir -p ${OUTPUT_FOLDER}/01-Logsmain
 		touch ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
 	fi
 
@@ -701,7 +701,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	## --------------------------------------------------
 
 	# Create folder
-	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/20-Alignment/${subf}
+	mkdir -p ${OUTPUT_FOLDER}/20-Alignment/${subf}
 
 	if [ ${VERBOSE} -eq 2 ]; then printf "Alignment; "; fi
 
@@ -767,7 +767,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	fi
 	
 	# Define target without flanking regions
-	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/20-Alignment/${subf}/flanking
+	mkdir -p ${OUTPUT_FOLDER}/20-Alignment/${subf}/flanking
 	blastn -subject ${SEARCH_TARGET} -query ${OUTPUT_FOLDER}/20-Alignment/${subf}/spades/contigs.seqtk.fasta -outfmt "6 std sseq qlen" > ${OUTPUT_FOLDER}/20-Alignment/${subf}/flanking/${subf}.target.tsv
 
 	# Size select blast hits
@@ -819,8 +819,8 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	fi
 
 	# Create folders
-	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/30-VariantCalling/${subf}
-	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/30-VariantCalling/${subf}/mapped_filtered ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/genotyped ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/reference ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/variants
+	mkdir -p ${OUTPUT_FOLDER}/30-VariantCalling/${subf}
+	mkdir -p ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/mapped_filtered ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/genotyped ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/reference ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/variants
 
 	if [ ${VERBOSE} -eq 2 ]; then printf "Variant calling; "; fi
 
@@ -833,7 +833,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		# MULTIPLE HAPLOTYPES
 
 		# Create folder
-		mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/40-Phasing/${subf}
+		mkdir -p ${OUTPUT_FOLDER}/40-Phasing/${subf}
 
 		if [ ${VERBOSE} -eq 2 ]; then printf "Phasing; "; fi
 
@@ -854,7 +854,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		fi
 
 		# Haplotype length correction: remove short matches
-		mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/50-haplotypes/${subf}
+		mkdir -p ${OUTPUT_FOLDER}/50-haplotypes/${subf}
 		seqtk seq -L ${min_tl} <(cat ${OUTPUT_FOLDER}/40-Phasing/${subf}/${subf}_assembly_h*.fasta) > ${OUTPUT_FOLDER}/50-haplotypes/${subf}/${subf}_haplotypes.fasta 
 
 		# Rename headers
@@ -963,7 +963,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 			# --------------- #
 
 			# Create folder
-			mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/60-Integration/${subf}
+			mkdir -p ${OUTPUT_FOLDER}/60-Integration/${subf}
 
 			# Copy number
 			copyNumber ${INPUT_FOLDER} ${subf}
@@ -977,7 +977,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 			printf "\n\n### Integration ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
 
 			# Create folder
-			mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/60-Integration/${subf}
+			mkdir -p ${OUTPUT_FOLDER}/60-Integration/${subf}
 
 			# Integrate only step II 
 			Rscript ${INTEGRATION} -r "None" -c ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv -i ${subf} -m 'unique' &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
@@ -1074,7 +1074,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		# --------------- #
 
 		# Create folder
-		mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/60-Integration/${subf}
+		mkdir -p ${OUTPUT_FOLDER}/60-Integration/${subf}
 
 		# Copy number
 		copyNumber ${INPUT_FOLDER} ${subf}
@@ -1088,7 +1088,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		printf "\n\n### Integration ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
 
 		# Create folder
-		mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/60-Integration/${subf}
+		mkdir -p ${OUTPUT_FOLDER}/60-Integration/${subf}
 
 		# Integrate only step II 
 		Rscript ${INTEGRATION} -r "None" -c ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv -i ${subf} -m 'unique' &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt

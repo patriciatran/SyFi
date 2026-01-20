@@ -186,7 +186,7 @@ if [[ -f ${OUTPUT_FOLDER}/01-Logs/amplicon/log_${DATE}.txt ]]; then
 	touch ${OUTPUT_FOLDER}/01-Logs/amplicon/log_${DATE}.txt
 else
 	# Touch Log File
-	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/01-Logs/amplicon
+	mkdir -p ${OUTPUT_FOLDER}/01-Logs/amplicon
 	touch ${OUTPUT_FOLDER}/01-Logs/amplicon/log_${DATE}.txt
 fi
 
@@ -280,7 +280,7 @@ function amplicon() {
 	maxlength=$6
 
 	# Create folder
-	mkdir -p ${OUTPUT_FOLDER}/${OUTPUT_FOLDER}/71-Amplicon/${subf}
+	mkdir -p ${OUTPUT_FOLDER}/71-Amplicon/${subf}
 
 	if [ $mode == "unique" ];then
 	 # Log
