@@ -147,6 +147,8 @@ fi
 
 # Default variables
 OUTPUT_FOLDER="." # Default to current directory
+mkdir -p "$OUTPUT_FOLDER"
+OUTPUT_FOLDER=$(readlink -f "$OUTPUT_FOLDER")
 
 # Get parameters
 while [[ $# -gt 0 ]]; do
