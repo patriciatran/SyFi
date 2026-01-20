@@ -42,6 +42,7 @@ function logo() {
 		echo "${bold}----------------------------------------------${normal}"
 		echo "${bold}Summary:${normal}"
 		echo "    Folder: ${folder}"
+		echo "    Output Folder: ${output_folder}"
 		echo "    Target: ${target}"
 		echo "    Cutoff: ${cutoff}"
 		echo "    Deviation length: ${lendev}"
@@ -611,7 +612,7 @@ function CleanFiles() {
 #-------------- #
 
 # Call logo
-logo ${INPUT_FOLDER} ${SEARCH_TARGET} ${BPDEV} ${CUTOFF} ${THREADS} ${MEM} ${KEEPF} ${VERBOSE} ${FORCE}
+logo ${OUTPUT_FOLDER} ${INPUT_FOLDER} ${SEARCH_TARGET} ${BPDEV} ${CUTOFF} ${THREADS} ${MEM} ${KEEPF} ${VERBOSE} ${FORCE}
 
 for subf in $(ls ${INPUT_FOLDER}); do
  
