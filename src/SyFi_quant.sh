@@ -90,6 +90,7 @@ function usage()
 	echo "  -m  | --minscorefraction                 Percentage identity score that Salmon uses for pseudoaligning metagenomic reads to the SyFi-generated fingerprints (default: 0.95)."
 	printf "\n"
 	echo "# Output options:"
+	echo "  -o  | --output_dir 						 Optional output folder, otherwise it will be written to current working directory"
 	echo "  -k  | --keep_files                       Keep temporary files [0: Minimum, 1: Salmon output, or 2: All] (default: 0)."
 	echo "  -v  | --verbose                          Verbose mode [0: Quiet 1: Samples, or 2: All] (default: 2)."
 	printf "\n"
@@ -121,9 +122,16 @@ if [[ $# -lt 2  && $1 != "-h" && $1 != "--help" && $1 != "--citation" && $1 != "
 	exit 2
 fi
 
+# Default variables
+OUTPUT_DIR="." # Default to current directory
+
 #Get parameters
 while [[ $# -gt 0 ]]; do
 	case $1 in
+		-o|--output_dir)
+			OUTPUT_DIR="$2"
+			shift 2
+			;;
 		-i|--read_folder)
 			READ_FOLDER="$2"
 			shift 2

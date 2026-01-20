@@ -120,8 +120,17 @@ if [[ $# -lt 1  && $1 != "-h" && $1 != "--help" && $1 != "help" && $1 != "citati
 	exit 2
 fi
 
+# Default output directory will be current directory unless using the -o output
+OUTPUT_DIR="."
+
 # Get module and pass parameters
 case $1 in
+	main|amplicon|quant)
+		MODULE=$1
+		shift
+		# Pass all remaining args, including the new -o if provided
+		${actual_path}/src/SyFi_${MODULE}.sh "$@"
+		;;
 	main)
 		shift
 		main_module "$@"

@@ -101,6 +101,7 @@ function usage()
 	echo "  -m | --memory           Memory in GBs (default: 8GB)."
 	printf "\n"
 	echo "# Output options:"
+	echo "  -o  | --output_dir 						 Optional output folder, otherwise it will be written to current working directory"
 	echo "  -k | --keep-files       Keep temporary files [0: Minimum, 1: BAM's, or 2: All] (default: 0)."
 	echo "  -v | --verbose          Verbose mode [0: Quiet 1: Samples, or 2: All] (default: 2)."
 	echo "  -f | --force            Force re-computation of computed samples [0: None, 1: All, 2: Skipped, or 3: Failed] (default: 0)."
@@ -143,9 +144,16 @@ if [[ $# -lt 4  && $1 != "-h" && $1 != "--help" && $1 != "-c" && $1 != "--citati
 	exit 2
 fi
 
+# Default variables
+OUTPUT_DIR="." # Default to current directory
+
 # Get parameters
 while [[ $# -gt 0 ]]; do
 	case $1 in
+		-o|--output_dir)
+			OUTPUT_DIR="$2"
+			shift 2
+			;;
 		-i|--input-folder)
 			INPUT_FOLDER="$2"
 			shift 2

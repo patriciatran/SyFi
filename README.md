@@ -140,7 +140,7 @@ For example:
 
 ### Output
 
-There is currently no flag to specify where the output file will be written. As of now, they will be written in the current working directory. That said, the structure will be:
+The output directory can be specified with the `-o` or `--output_dir` flag. Otherwise, it will be written to the current working directory by default.
 
 The default (minimum; k=0) output of SyFi consist of:
 
