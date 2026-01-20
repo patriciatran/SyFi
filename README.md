@@ -29,6 +29,8 @@ The pipeline depends on:
 - [Salmon](https://combine-lab.github.io/salmon/)
 - [Qiime2](https://qiime2.org/)
 
+Depending on your system, you will also need to install bash bc (basic calculator) if it's not there already.
+
 ## Installation
 
 ### Build conda environment
@@ -73,7 +75,13 @@ unzip SyFi_v1.0.zip
 echo 'export PATH="{SOFTWARE_FOLDER_PATH}/SyFi_v1.0/:$PATH"' >> $HOME/.bashrc
 ```
 
+>[!NOTE] If you want to use a more recent version, you can also use `git clone` on this directory to get a copy of the updated scripts.
+>Otherwise, the wget command will download the v1.0 release file. See the commit log to see what has changed compared to the author's main repository (mainly, the way parameters are read in). 
+
+
 ### Usage
+
+Typing `./SyFi.sh` will show the main help page:
 
 ```
 Usage: ./SyFi.sh <MODULE>
@@ -91,6 +99,8 @@ Other:
 ```
 
 ### Input
+
+>[!NOTE] An example dataset can be found at a Zenodo link in the [wiki](SyFi.wiki.md).
 
 SyFi main assumes that the genomes and reads are organized in sub-folders inside of the input folder (-i | --input-folder). Each sub-folder should contain the genome (.fasta) and the reads (.fastq.gz). 
 
@@ -129,6 +139,8 @@ For example:
 ```
 
 ### Output
+
+There is currently no flag to specify where the output file will be written. As of now, they will be written in the current working directory. That said, the structure will be:
 
 The default (minimum; k=0) output of SyFi consist of:
 

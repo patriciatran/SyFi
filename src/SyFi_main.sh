@@ -162,6 +162,14 @@ while [[ $# -gt 0 ]]; do
 			CUTOFF="$2"
 			shift 2
 			;;
+		--fasta-extension)
+			FAEXT="$2"
+			shift 2
+			;;
+		--fastq-extension)
+			FQEXT="$2"
+			shift 2
+			;;
 		-t|--threads)
 			THREADS="$2"
 			shift 2
@@ -184,6 +192,14 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-h|--help)
 			usage
+			exit
+			;;
+		--citation)
+			citation
+			exit
+			;;
+		--folder-structure)
+			folder_structure
 			exit
 			;;
 		*)
