@@ -75,8 +75,8 @@ unzip SyFi_v1.0.zip
 echo 'export PATH="{SOFTWARE_FOLDER_PATH}/SyFi_v1.0/:$PATH"' >> $HOME/.bashrc
 ```
 
->[!NOTE] If you want to use a more recent version, you can also use `git clone` on this directory to get a copy of the updated scripts.
->Otherwise, the wget command will download the v1.0 release file. See the commit log to see what has changed compared to the author's main repository (mainly, the way parameters are read in). 
+> [!NOTE] If you want to use a more recent version, you can also use `git clone` on this directory to get a copy of the updated scripts.
+> Otherwise, the wget command will download the v1.0 release file. See the commit log to see what has changed compared to the author's main repository (mainly, the way parameters are read in). 
 
 
 ### Usage
@@ -100,7 +100,7 @@ Other:
 
 ### Input
 
->[!NOTE] An example dataset can be found at a Zenodo link in the [wiki](SyFi.wiki.md).
+> [!NOTE] An example dataset can be found at a Zenodo link in the [wiki](SyFi.wiki.md). Note this is a `tar.gz` file, so you will need to unzip it using `tar xf filename.gz` , and not `gunzip -d filename.gz`.
 
 SyFi main assumes that the genomes and reads are organized in sub-folders inside of the input folder (-i | --input-folder). Each sub-folder should contain the genome (.fasta) and the reads (.fastq.gz). 
 
