@@ -267,7 +267,7 @@ function pseudoalignment() {
 	if [ ${VERBOSE} -ge 1 ]; then echo ${sample}; fi
 	if [ ${VERBOSE} -eq 2 ]; then printf "Performing pseudoalignment of reads to fingerprints"; fi
 
-	mkdir -p 80-Pseudoalignment/${sample}
+	mkdir -p ${OUTPUT_DIR}/80-Pseudoalignment/${sample}
 
 	if [ ${readtype} = "paired" ]; then
 		 salmon quant -i ${fingerprints} -l IU -1 ${read_folder}/${sample}/${sample}_R1.fastq.gz -2 ${read_folder}/${sample}/${sample}_R2.fastq.gz --validateMappings -o 80-Pseudoalignment/${sample} --minScoreFraction ${minscorefraction} --writeMappings 80-Pseudoalignment/${sample}/salmon_alignments.sam --writeUnmappedNames -p ${threads} &> /dev/null
@@ -342,7 +342,7 @@ normalize_isolate_counts() {
 logo ${READ_FOLDER} ${FINGERPRINT_FOLDER} ${READ_TYPE} ${MINSCOREFRACTION} ${THREADS} ${KEEPF} ${VERBOSE}
 
 #Make a new directory
-mkdir -p 80-Pseudoalignment 90-Output
+mkdir -p ${OUTPUT_DIR}/80-Pseudoalignment 90-Output
 
 #----------------------------- #
 # Fingerprint index generation #
@@ -360,7 +360,7 @@ for subf in $(ls ${FINGERPRINT_FOLDER}); do
 		touch 01-Logs/quant/log_${subf}.txt
 	else
 		# Touch Log File
-		mkdir -p 01-Logs/quant
+		mkdir -p ${OUTPUT_DIR}/01-Logs/quant
 		touch 01-Logs/quant/log_${subf}.txt
 	fi
 

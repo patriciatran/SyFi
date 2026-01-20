@@ -344,7 +344,7 @@ function markDuplicates() {
 
 	# Plot BAM
 	samtools stats -d ${bam_file} > ${output_fn}
-	plot-bamstats -p ${output_dir}/mapped_filtered/ ${output_fn}
+	plot-bamstats -p ${OUTPUT_DIR}//mapped_filtered/ ${output_fn}
 }
 
 # FUNCTION: Haplotype Caller
@@ -458,7 +458,7 @@ function fingerPrint() {
 	variants=$3 # Yes/No
 
 	# Create folder
-	mkdir -p 70-Fingerprints/${subf}
+	mkdir -p ${OUTPUT_DIR}/70-Fingerprints/${subf}
 
 	if [ $mode == "unique" ];then
 		# Log
@@ -651,7 +651,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		touch 01-Logs/main/log_${subf}.txt
 	else
 		# Touch Log File
-		mkdir -p 01-Logs/main
+		mkdir -p ${OUTPUT_DIR}/01-Logs/main
 		touch 01-Logs/main/log_${subf}.txt
 	fi
 
@@ -682,7 +682,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	if [ ${VERBOSE} -eq 2 ]; then printf "Performing: Mapping; "; fi
 
 	# Create folder
-	mkdir -p 10-Blast 11-Sequences/${subf}
+	mkdir -p ${OUTPUT_DIR}/10-Blast 11-Sequences/${subf}
 	# Blastn
 	blastn -query ${INPUT_FOLDER}/${subf}/${subf}.${FAEXT} -subject ${SEARCH_TARGET} -strand both -outfmt "6 std qseq" > 10-Blast/${subf}.tsv
 	printf ">${subf}\n$(cat 10-Blast/${subf}.tsv | sort -n -k4 | tail -n 1 | cut -f 13 | sed 's/-//g')" > 11-Sequences/${subf}/${subf}.fasta
@@ -701,7 +701,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	## --------------------------------------------------
 
 	# Create folder
-	mkdir -p 20-Alignment/${subf}
+	mkdir -p ${OUTPUT_DIR}/20-Alignment/${subf}
 
 	if [ ${VERBOSE} -eq 2 ]; then printf "Alignment; "; fi
 
@@ -767,7 +767,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	fi
 	
 	# Define target without flanking regions
-	mkdir -p 20-Alignment/${subf}/flanking
+	mkdir -p ${OUTPUT_DIR}/20-Alignment/${subf}/flanking
 	blastn -subject ${SEARCH_TARGET} -query 20-Alignment/${subf}/spades/contigs.seqtk.fasta -outfmt "6 std sseq qlen" > 20-Alignment/${subf}/flanking/${subf}.target.tsv
 
 	# Size select blast hits
@@ -819,8 +819,8 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	fi
 
 	# Create folders
-	mkdir -p 30-VariantCalling/${subf}
-	mkdir -p 30-VariantCalling/${subf}/mapped_filtered 30-VariantCalling/${subf}/genotyped 30-VariantCalling/${subf}/reference 30-VariantCalling/${subf}/variants
+	mkdir -p ${OUTPUT_DIR}/30-VariantCalling/${subf}
+	mkdir -p ${OUTPUT_DIR}/30-VariantCalling/${subf}/mapped_filtered 30-VariantCalling/${subf}/genotyped 30-VariantCalling/${subf}/reference 30-VariantCalling/${subf}/variants
 
 	if [ ${VERBOSE} -eq 2 ]; then printf "Variant calling; "; fi
 
@@ -833,7 +833,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		# MULTIPLE HAPLOTYPES
 
 		# Create folder
-		mkdir -p 40-Phasing/${subf}
+		mkdir -p ${OUTPUT_DIR}/40-Phasing/${subf}
 
 		if [ ${VERBOSE} -eq 2 ]; then printf "Phasing; "; fi
 
@@ -854,7 +854,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		fi
 
 		# Haplotype length correction: remove short matches
-		mkdir -p 50-Haplotypes/${subf}
+		mkdir -p ${OUTPUT_DIR}/50-Haplotypes/${subf}
 		seqtk seq -L ${min_tl} <(cat 40-Phasing/${subf}/${subf}_assembly_h*.fasta) > 50-Haplotypes/${subf}/${subf}_haplotypes.fasta 
 
 		# Rename headers
@@ -891,7 +891,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		if [ $(grep "^>" 50-Haplotypes/${subf}/clean_${subf}_haplotypes.fasta | wc -l) -gt 1 ]
 		then
 			# Create folder
-			mkdir -p 60-Integration
+			mkdir -p ${OUTPUT_DIR}/60-Integration
 
 			if [ ${VERBOSE} -eq 2 ]; then printf "Abundance ratio; "; fi
 
@@ -963,7 +963,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 			# --------------- #
 
 			# Create folder
-			mkdir -p 60-Integration/${subf}
+			mkdir -p ${OUTPUT_DIR}/60-Integration/${subf}
 
 			# Copy number
 			copyNumber ${INPUT_FOLDER} ${subf}
@@ -977,7 +977,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 			printf "\n\n### Integration ###\n\n" >> 01-Logs/main/log_${subf}.txt
 
 			# Create folder
-			mkdir -p 60-Integration/${subf}
+			mkdir -p ${OUTPUT_DIR}/60-Integration/${subf}
 
 			# Integrate only step II 
 			Rscript ${INTEGRATION} -r "None" -c 60-Integration/${subf}/copy_number.tsv -i ${subf} -m 'unique' &>> 01-Logs/main/log_${subf}.txt
@@ -1001,7 +1001,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 		# Kallisto (Applied to strains with two recovered targets - 2 haplotypes)
 		# Create folder
-		mkdir -p 60-Integration
+		mkdir -p ${OUTPUT_DIR}/60-Integration
 
 		if [ ${VERBOSE} -eq 2 ]; then printf "Abundance ratio; "; fi
 
@@ -1074,7 +1074,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		# --------------- #
 
 		# Create folder
-		mkdir -p 60-Integration/${subf}
+		mkdir -p ${OUTPUT_DIR}/60-Integration/${subf}
 
 		# Copy number
 		copyNumber ${INPUT_FOLDER} ${subf}
@@ -1088,7 +1088,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		printf "\n\n### Integration ###\n\n" >> 01-Logs/main/log_${subf}.txt
 
 		# Create folder
-		mkdir -p 60-Integration/${subf}
+		mkdir -p ${OUTPUT_DIR}/60-Integration/${subf}
 
 		# Integrate only step II 
 		Rscript ${INTEGRATION} -r "None" -c 60-Integration/${subf}/copy_number.tsv -i ${subf} -m 'unique' &>> 01-Logs/main/log_${subf}.txt

@@ -186,7 +186,7 @@ if [[ -f 01-Logs/amplicon/log_${DATE}.txt ]]; then
 	touch 01-Logs/amplicon/log_${DATE}.txt
 else
 	# Touch Log File
-	mkdir -p 01-Logs/amplicon
+	mkdir -p ${OUTPUT_DIR}/01-Logs/amplicon
 	touch 01-Logs/amplicon/log_${DATE}.txt
 fi
 
@@ -280,7 +280,7 @@ function amplicon() {
 	maxlength=$6
 
 	# Create folder
-	mkdir -p 71-Amplicon/${subf}
+	mkdir -p ${OUTPUT_DIR}/71-Amplicon/${subf}
 
 	if [ $mode == "unique" ];then
 	 # Log
@@ -457,7 +457,7 @@ function CleanFiles() {
 # Call logo
 logo ${INPUT_FOLDER} ${FORWARD_PRIMER} ${REVERSE_PRIMER} ${MINIMUM_LENGTH} ${MAXIMUM_LENGTH} ${KEEPF} ${VERBOSE} ${FORCE}
 
-mkdir -p 71-Amplicon
+mkdir -p ${OUTPUT_DIR}/71-Amplicon
 
 for subf in $(ls ${INPUT_FOLDER}); do
 
