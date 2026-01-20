@@ -42,7 +42,7 @@ function logo() {
 		echo "${bold}----------------------------------------------${normal}"
 		echo "${bold}Summary:${normal}"
 		echo "    Folder: ${folder}"
-		echo "    Output Folder: ${output_folder}"
+		echo "    Output Folder: ${OUTPUT_FOLDER}"
 		echo "    Target: ${target}"
 		echo "    Cutoff: ${cutoff}"
 		echo "    Deviation length: ${lendev}"
@@ -225,8 +225,8 @@ trap ctrl_c INT
 
 function ctrl_c() {
 	printf "\n${red}Execution halted by user.${normal}\n"
-	if [ -f "${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt" ]; then
-		printf "\n${red}Execution halted by user.${normal}\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+	if [ -f "${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt" ]; then
+		printf "\n${red}Execution halted by user.${normal}\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 	fi
 	exit
 }
@@ -414,7 +414,7 @@ function copyNumber() {
 	if [ ${VERBOSE} -eq 2 ]; then printf "Copy number; "; fi
 
 	# Log
-	printf "\n\n### Target Copy Number ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+	printf "\n\n### Target Copy Number ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 	# Header
 	printf "Strain\tGenome_length\tGenome_nbases\tTarget_length\tTarget_nbases\tCopy_number\n" > ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv
@@ -464,7 +464,7 @@ function fingerPrint() {
 	if [ $mode == "unique" ];then
 		# Log
 		if [ ${VERBOSE} -eq 2 ]; then printf "Fingerprint [unique]\n"; fi
-		printf "\n\n### Fingerprint ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		printf "\n\n### Fingerprint ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 		# Create haplotype sequence
 		printf ">seq_h1\n$(grep -v "^>" ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta)\n" > ${OUTPUT_FOLDER}/70-Fingerprints/${subf}/seq_h1.fasta
@@ -478,7 +478,7 @@ function fingerPrint() {
 	elif [ $mode == "multiple" ];then
 		# Log
 		if [ ${VERBOSE} -eq 2 ]; then printf "Fingerprint\n"; fi
-		printf "\n\n### Fingerprint ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		printf "\n\n### Fingerprint ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 		# Check: Variants (Yes/No)
 		if [ $variants == "Yes" ]; then
@@ -502,18 +502,18 @@ function fingerPrint() {
 			done
 
 			# Separate fasta into multiples fasta
-			seqkit split -i ${OUTPUT_FOLDER}/50-haplotypes/${subf}/clean_${subf}_haplotypes.fasta -O ${OUTPUT_FOLDER}/70-Fingerprints/${subf} &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			seqkit split -i ${OUTPUT_FOLDER}/50-haplotypes/${subf}/clean_${subf}_haplotypes.fasta -O ${OUTPUT_FOLDER}/70-Fingerprints/${subf} &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 			# Rename haplotypes files
-			for i in $(ls -d ${OUTPUT_FOLDER}/70-Fingerprints/${subf}/*); do mv ${i} $(echo ${i} | sed "s/clean_${subf}_haplotypes.part_//g"); done &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			for i in $(ls -d ${OUTPUT_FOLDER}/70-Fingerprints/${subf}/*); do mv ${i} $(echo ${i} | sed "s/clean_${subf}_haplotypes.part_//g"); done &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		elif [ $variants == "No" ]; then
 			# Separate fasta into multiples fasta
-			seqkit split -i ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta -O ${OUTPUT_FOLDER}/70-Fingerprints/${subf} &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			seqkit split -i ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta -O ${OUTPUT_FOLDER}/70-Fingerprints/${subf} &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 			# Rename haplotypes files
-			for i in $(ls -d ${OUTPUT_FOLDER}/70-Fingerprints/${subf}/*); do mv ${i} $(echo ${i} | sed "s/${subf}.part_//g"); done &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			for i in $(ls -d ${OUTPUT_FOLDER}/70-Fingerprints/${subf}/*); do mv ${i} $(echo ${i} | sed "s/${subf}.part_//g"); done &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		else
-			printf "Variants variable is not yes or no but ${variants}" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			printf "Variants variable is not yes or no but ${variants}" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		fi
 
 		# Keep haplotypes filtered in integration
@@ -556,7 +556,7 @@ function CleanFiles() {
 	KEEPF=$3
 
 	# Array
-	keep=("./${OUTPUT_FOLDER}/01-Logsmain/log_${SAMPLE}.txt" "./${OUTPUT_FOLDER}/10-Blast/${SAMPLE}.tsv" "./${OUTPUT_FOLDER}/11-Sequences/${SAMPLE}/${SAMPLE}.fasta" "./${OUTPUT_FOLDER}/20-Alignment/${SAMPLE}/${SAMPLE}.fasta" "./${OUTPUT_FOLDER}/20-Alignment/${SAMPLE}/${SAMPLE}_R1.fastq.gz" "./${OUTPUT_FOLDER}/20-Alignment/${SAMPLE}/${SAMPLE}_R2.fastq.gz" "./${OUTPUT_FOLDER}/30-VariantCalling/${SAMPLE}/variants/${SAMPLE}.vcf.gz" "./${OUTPUT_FOLDER}/40-Phasing/${SAMPLE}/${SAMPLE}_phased.vcf.gz" "./${OUTPUT_FOLDER}/40-Phasing/${SAMPLE}/${SAMPLE}_variants_stats.tsv" "./${OUTPUT_FOLDER}/50-haplotypes/${SAMPLE}/clean_${SAMPLE}_haplotypes.fasta" "./${OUTPUT_FOLDER}/60-Integration/${SAMPLE}/abundance.tsv" "./${OUTPUT_FOLDER}/60-Integration/${SAMPLE}/copy_number.tsv" "./${OUTPUT_FOLDER}/60-Integration/${SAMPLE}/integration.tsv" "./${OUTPUT_FOLDER}/70-Fingerprints/${SAMPLE}/${SAMPLE}_all_haplotypes.fasta")
+	keep=("./${OUTPUT_FOLDER}/01-Logs/main/log_${SAMPLE}.txt" "./${OUTPUT_FOLDER}/10-Blast/${SAMPLE}.tsv" "./${OUTPUT_FOLDER}/11-Sequences/${SAMPLE}/${SAMPLE}.fasta" "./${OUTPUT_FOLDER}/20-Alignment/${SAMPLE}/${SAMPLE}.fasta" "./${OUTPUT_FOLDER}/20-Alignment/${SAMPLE}/${SAMPLE}_R1.fastq.gz" "./${OUTPUT_FOLDER}/20-Alignment/${SAMPLE}/${SAMPLE}_R2.fastq.gz" "./${OUTPUT_FOLDER}/30-VariantCalling/${SAMPLE}/variants/${SAMPLE}.vcf.gz" "./${OUTPUT_FOLDER}/40-Phasing/${SAMPLE}/${SAMPLE}_phased.vcf.gz" "./${OUTPUT_FOLDER}/40-Phasing/${SAMPLE}/${SAMPLE}_variants_stats.tsv" "./${OUTPUT_FOLDER}/50-haplotypes/${SAMPLE}/clean_${SAMPLE}_haplotypes.fasta" "./${OUTPUT_FOLDER}/60-Integration/${SAMPLE}/abundance.tsv" "./${OUTPUT_FOLDER}/60-Integration/${SAMPLE}/copy_number.tsv" "./${OUTPUT_FOLDER}/60-Integration/${SAMPLE}/integration.tsv" "./${OUTPUT_FOLDER}/70-Fingerprints/${SAMPLE}/${SAMPLE}_all_haplotypes.fasta")
 
 	# Remove files
 	if [ ${KEEPF} -eq 0 ]; then
@@ -612,7 +612,7 @@ function CleanFiles() {
 #-------------- #
 
 # Call logo
-logo ${OUTPUT_FOLDER} ${INPUT_FOLDER} ${SEARCH_TARGET} ${BPDEV} ${CUTOFF} ${THREADS} ${MEM} ${KEEPF} ${VERBOSE} ${FORCE}
+logo ${INPUT_FOLDER} ${SEARCH_TARGET} ${BPDEV} ${CUTOFF} ${THREADS} ${MEM} ${KEEPF} ${VERBOSE} ${FORCE}
 
 for subf in $(ls ${INPUT_FOLDER}); do
  
@@ -646,20 +646,20 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	fi
 
 	## CHECK: Log file
-	if [[ -f ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt ]]; then
+	if [[ -f ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt ]]; then
 		# Remove old log file
-		rm -rf ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-		touch ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		rm -rf ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+		touch ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 	else
 		# Touch Log File
 		mkdir -p ${OUTPUT_FOLDER}/01-Logsmain
-		touch ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		touch ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 	fi
 
 	## CHECK: Input in folder
 	# Fasta input
 	if [[ ! -f ${INPUT_FOLDER}/${subf}/${subf}.${FAEXT} ]]; then
-		printf "\n${red}ERROR:${normal} File ${INPUT_FOLDER}/${subf}/${subf}.${FAEXT} missing, please use the \"-e/--extension\" argument if the extension is not \"fasta\"." | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		printf "\n${red}ERROR:${normal} File ${INPUT_FOLDER}/${subf}/${subf}.${FAEXT} missing, please use the \"-e/--extension\" argument if the extension is not \"fasta\"." | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} computation will be skipped.\n"; fi
 		printf "${subf}\tSkipped\tWrong reference extension\n" >> progress.txt
 		continue
@@ -667,14 +667,14 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 	# Fastq input
 	if [[ ! -f ${INPUT_FOLDER}/${subf}/${subf}_R1.${FQEXT} || ! -f ${INPUT_FOLDER}/${subf}/${subf}_R2.${FQEXT} ]]; then
-		printf "\n${red}ERROR:${normal} One or both illumina reads ${INPUT_FOLDER}/${subf}/${subf}_R[1/2].${FQEXT} are missing, please use the \"-e/--extension\" argument if the extension is not \"fastq.gz\"." | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		printf "\n${red}ERROR:${normal} One or both illumina reads ${INPUT_FOLDER}/${subf}/${subf}_R[1/2].${FQEXT} are missing, please use the \"-e/--extension\" argument if the extension is not \"fastq.gz\"." | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} computation will be skipped.\n"; fi
 		printf "${subf}\tSkipped\tWrong reads extension\n" >> progress.txt
 		continue
 	fi
 
-	if [ ${VERBOSE} -ge 1 ]; then date "+start time: %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt; fi
-	if [ ${VERBOSE} -ge 1 ]; then printf "${blue}Sample:${normal} $subf\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt; fi
+	if [ ${VERBOSE} -ge 1 ]; then date "+start time: %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt; fi
+	if [ ${VERBOSE} -ge 1 ]; then printf "${blue}Sample:${normal} $subf\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt; fi
 
 	## ------------------------------------
 	## Target recovery from contigs (BLAST)
@@ -690,9 +690,9 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 	# CHECK: Absent target match (Perhaps, remove small hits!)
 	if [ $(cat ${OUTPUT_FOLDER}/11-Sequences/${subf}/${subf}.fasta | wc -l) -lt 1 ]; then
-		if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} No target was found for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt; fi
+		if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} No target was found for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt; fi
 		printf "${subf}\tFailed\tNo target recovered from reference\n" >> progress.txt
-		date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		echo ""
 		continue
 	fi
@@ -707,23 +707,23 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	if [ ${VERBOSE} -eq 2 ]; then printf "Alignment; "; fi
 
 	# Alignment
-	printf "### BWA mapping ###\n\n" > ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-	bwa-mem2 index ${OUTPUT_FOLDER}/11-Sequences/${subf}/${subf}.fasta &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-	bwa-mem2 mem ${OUTPUT_FOLDER}/11-Sequences/${subf}/${subf}.fasta ${INPUT_FOLDER}/${subf}/${subf}_R1.${FQEXT} ${INPUT_FOLDER}/${subf}/${subf}_R2.${FQEXT} -t ${THREADS} 2>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt > ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.sam
+	printf "### BWA mapping ###\n\n" > ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+	bwa-mem2 index ${OUTPUT_FOLDER}/11-Sequences/${subf}/${subf}.fasta &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+	bwa-mem2 mem ${OUTPUT_FOLDER}/11-Sequences/${subf}/${subf}.fasta ${INPUT_FOLDER}/${subf}/${subf}_R1.${FQEXT} ${INPUT_FOLDER}/${subf}/${subf}_R2.${FQEXT} -t ${THREADS} 2>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt > ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.sam
 
 	# Sam to BAM
-	samtools view -b ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.sam -@ ${THREADS} 2>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt > ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.bam
+	samtools view -b ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.sam -@ ${THREADS} 2>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt > ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.bam
 	# Sort BAM (Coordinate) for Variant Call
-	# samtools sort -o ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.sort.bam -O bam ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.bam -@ ${THREADS} 2>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+	# samtools sort -o ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.sort.bam -O bam ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.bam -@ ${THREADS} 2>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 	# Obtain BAM of mapped reads (properly pair)
-	samtools view -b -q 30 -f 0x2 ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.sam 2>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt > ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.mapped.bam
+	samtools view -b -q 30 -f 0x2 ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.sam 2>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt > ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.mapped.bam
 
 	if [ ${VERBOSE} -eq 2 ]; then printf "Reads recovery; "; fi
 
 	# Obtain Fastq's
-	printf "\n\n### Reads recovery ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-	samtools collate ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.mapped.bam ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.collate 2>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-	samtools fastq -1 ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R1.fastq -2 ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R2.fastq -s ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_leftover.fastq ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.collate.bam 2>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+	printf "\n\n### Reads recovery ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+	samtools collate ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.mapped.bam ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.collate 2>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+	samtools fastq -1 ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R1.fastq -2 ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R2.fastq -s ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_leftover.fastq ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.collate.bam 2>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 	gzip -f ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_*.fastq
 
 	## --------------------------------------------------
@@ -732,12 +732,12 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 	# CHECK: Absent R1/R2 for de novo assembly
 	if [[ $(zcat ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R1.fastq.gz | wc -l) -eq 0 || $( zcat ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R2.fastq.gz | wc -l) -eq 0 ]]; then
-		if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} No target reads were recovered for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt; fi
+		if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} No target reads were recovered for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt; fi
 		printf "${subf}\tFailed\tNo reads recovered for target\n" >> progress.txt
 		# Clean files/folders
 		CleanFiles ${subf} ${INPUT_FOLDER} ${KEEPF}
 		# Date
-		date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		echo ""
 		continue
 	fi
@@ -745,24 +745,24 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	if [ ${VERBOSE} -eq 2 ]; then printf "Contig re-build; "; fi
 
 	# SPAdes (Unambigous nucleotides assembly)
-	printf "\n\n### Contig re-build ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-	spades.py -1 ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R1.fastq.gz -2 ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R2.fastq.gz -t ${THREADS} -o ${OUTPUT_FOLDER}/20-Alignment/${subf}/spades -m ${MEM} &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+	printf "\n\n### Contig re-build ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+	spades.py -1 ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R1.fastq.gz -2 ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R2.fastq.gz -t ${THREADS} -o ${OUTPUT_FOLDER}/20-Alignment/${subf}/spades -m ${MEM} &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 	# Size select SPAdes recovered target
 	if [ -f "${OUTPUT_FOLDER}/20-Alignment/${subf}/spades/contigs.fasta" ]; then
 		seqtk seq -L ${min_tl} ${OUTPUT_FOLDER}/20-Alignment/${subf}/spades/contigs.fasta > ${OUTPUT_FOLDER}/20-Alignment/${subf}/spades/contigs.seqtk.fasta
 	else
-		printf "\n${red}ERROR:${normal} No target was recovered for ${subf} by SPAdes. This could be caused by a low number of recovered reads.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		printf "\n${red}ERROR:${normal} No target was recovered for ${subf} by SPAdes. This could be caused by a low number of recovered reads.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		printf "${subf}\tFailed\tSPAdes did not assembly any target sequence.\n" >> progress.txt
-		date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		echo ""
 		continue
 	fi
 	# Check if sequences passed filtering
 	if [ $(grep "^>" ${OUTPUT_FOLDER}/20-Alignment/${subf}/spades/contigs.seqtk.fasta | wc -l) -eq 0 ]; then
-		printf "\n${red}ERROR:${normal} No target was recovered for ${subf} or the target recovered was too small. In the second case, make \"-l/--len-deviation\" larger. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		printf "\n${red}ERROR:${normal} No target was recovered for ${subf} or the target recovered was too small. In the second case, make \"-l/--len-deviation\" larger. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		printf "${subf}\tSkipped\tRecovered target length below minimum length\n" >> progress.txt
-		date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		echo ""
 		continue
 	fi
@@ -785,9 +785,9 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	
 	# Check if hit was not recovered
 	if [ $(cat ${OUTPUT_FOLDER}/20-Alignment/${subf}/flanking/${subf}.target.sizeclean.tsv | wc -l) == 0 ]; then
-		printf "\n${red}ERROR:${normal} No target was recovered for ${subf} or the target recovered was too small. In the second case, make \"-l/--len-deviation\" larger. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		printf "\n${red}ERROR:${normal} No target was recovered for ${subf} or the target recovered was too small. In the second case, make \"-l/--len-deviation\" larger. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		printf "${subf}\tSkipped\tRecovered target length below minimum length\n" >> progress.txt
-		date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		echo ""
 		continue
 	fi
@@ -796,12 +796,12 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	cp ${OUTPUT_FOLDER}/20-Alignment/${subf}/spades/contigs.seqtk.fasta ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta
 
 	# Align
-	printf "\n\n### Contig re-alignment (BWA) ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-	bwa-mem2 index ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-	bwa-mem2 mem ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R1.fastq.gz ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R2.fastq.gz -t ${THREADS} 2>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt > ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.sam
+	printf "\n\n### Contig re-alignment (BWA) ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+	bwa-mem2 index ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+	bwa-mem2 mem ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R1.fastq.gz ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}_R2.fastq.gz -t ${THREADS} 2>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt > ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.sam
 	
-	samtools view -b ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.sam -@ ${THREADS} 2>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt > ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.bam
-	samtools sort -o ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.sort.bam -O bam ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.bam -@ ${THREADS} 2>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+	samtools view -b ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.sam -@ ${THREADS} 2>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt > ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.bam
+	samtools sort -o ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.sort.bam -O bam ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.bam -@ ${THREADS} 2>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 	## -------------------------------------------
 	## Variant Calling & Phasing (GATK & BCFTools)
@@ -809,12 +809,12 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 	# CHECK: Absent rebuilt BAM
 	if [[ ! -f ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.sort.bam || ! -f ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta ]]; then
-		if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}}WARNING:${normal} No target reads were recovered for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt; fi
+		if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}}WARNING:${normal} No target reads were recovered for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt; fi
 		printf "${subf}\tFailed\tNo reads recovered for target\n" >> progress.txt
 		# Clean files/folders
 		CleanFiles ${subf} ${INPUT_FOLDER} ${KEEPF}
 		# Date
-		date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 		echo ""
 		continue
 	fi
@@ -826,8 +826,8 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	if [ ${VERBOSE} -eq 2 ]; then printf "Variant calling; "; fi
 
 	# Variant call
-	printf "\n\n### Variant calling ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-	variantCalling ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.sort.bam ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.dict ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/mapped_filtered/${subf}.filtered.bam ${OUTPUT_FOLDER}/30-VariantCalling/${subf} ${THREADS} &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+	printf "\n\n### Variant calling ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+	variantCalling ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.rebuild.sort.bam ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.dict ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/mapped_filtered/${subf}.filtered.bam ${OUTPUT_FOLDER}/30-VariantCalling/${subf} ${THREADS} &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 	# CHECK: No variants recovered
 	if [[ -f ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/variants/${subf}.vcf.gz && $(zcat ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/variants/${subf}.vcf.gz | grep -v "#" | wc -l) != 0 ]]; then
@@ -839,17 +839,17 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		if [ ${VERBOSE} -eq 2 ]; then printf "Phasing; "; fi
 
 		# Phasing
-		printf "\n\n### Phasing ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-		bash ${GENOME_PHASE} -s ${subf} -t ${THREADS} -r ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta -v ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/variants/${subf}.vcf.gz -i 20-Alignment -o ${OUTPUT_FOLDER}/40-Phasing/${subf} &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		printf "\n\n### Phasing ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+		bash ${GENOME_PHASE} -s ${subf} -t ${THREADS} -r ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta -v ${OUTPUT_FOLDER}/30-VariantCalling/${subf}/variants/${subf}.vcf.gz -i 20-Alignment -o ${OUTPUT_FOLDER}/40-Phasing/${subf} &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 		# CHECK: Absent haplotypes
 		if [[ ! -f ${OUTPUT_FOLDER}/40-Phasing/${subf}/${subf}_assembly_h1.fasta || ! -f ${OUTPUT_FOLDER}/40-Phasing/${subf}/${subf}_assembly_h2.fasta ]]; then
-			if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} No haplotypes were recovered for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt; fi
+			if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} No haplotypes were recovered for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt; fi
 			printf "${subf}\tFailed\tNo haplotypes were found\n" >> progress.txt
 			# Clean files/folders
 			CleanFiles ${subf} ${INPUT_FOLDER} ${KEEPF}
 			# Date
-			date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 			echo ""
 			continue
 		fi
@@ -873,7 +873,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		done
 
 		# Haplotype duplicate removal (SeqKit)
-		seqkit rmdup -s ${OUTPUT_FOLDER}/50-haplotypes/${subf}/${subf}_haplotypes.fasta 2>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt > ${OUTPUT_FOLDER}/50-haplotypes/${subf}/clean_${subf}_haplotypes.fasta
+		seqkit rmdup -s ${OUTPUT_FOLDER}/50-haplotypes/${subf}/${subf}_haplotypes.fasta 2>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt > ${OUTPUT_FOLDER}/50-haplotypes/${subf}/clean_${subf}_haplotypes.fasta
 
 		## ------------------------------------
 		## Haplotype abundance ratio (Kallisto)
@@ -881,9 +881,9 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 		# CHECK: Absent clean haplotypes
 		if [ ! -f ${OUTPUT_FOLDER}/50-haplotypes/${subf}/clean_${subf}_haplotypes.fasta ]; then
-			if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} No haplotypes were recovered for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt; fi
+			if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} No haplotypes were recovered for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt; fi
 			printf "${subf}\tSkipped\No haplotypes were recovered\n" > progress.txt
-			date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 			echo ""
 			continue
 		fi
@@ -897,13 +897,13 @@ for subf in $(ls ${INPUT_FOLDER}); do
 			if [ ${VERBOSE} -eq 2 ]; then printf "Abundance ratio; "; fi
 
 			# Kallisto
-			printf "\n\n### Kallisto ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-			kallisto index -i ${OUTPUT_FOLDER}/50-haplotypes/${subf}/clean_${subf}_haplotypes.fasta.idx ${OUTPUT_FOLDER}/50-haplotypes/${subf}/clean_${subf}_haplotypes.fasta &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-			kallisto quant -i ${OUTPUT_FOLDER}/50-haplotypes/${subf}/clean_${subf}_haplotypes.fasta.idx -o ${OUTPUT_FOLDER}/60-Integration/${subf} ${INPUT_FOLDER}/${subf}/${subf}_R1.fastq.gz ${INPUT_FOLDER}/${subf}/${subf}_R2.fastq.gz -t ${THREADS} &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			printf "\n\n### Kallisto ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+			kallisto index -i ${OUTPUT_FOLDER}/50-haplotypes/${subf}/clean_${subf}_haplotypes.fasta.idx ${OUTPUT_FOLDER}/50-haplotypes/${subf}/clean_${subf}_haplotypes.fasta &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+			kallisto quant -i ${OUTPUT_FOLDER}/50-haplotypes/${subf}/clean_${subf}_haplotypes.fasta.idx -o ${OUTPUT_FOLDER}/60-Integration/${subf} ${INPUT_FOLDER}/${subf}/${subf}_R1.fastq.gz ${INPUT_FOLDER}/${subf}/${subf}_R2.fastq.gz -t ${THREADS} &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 			# Filter haplotypes
 			cp ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.tsv ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.orig.tsv
-			Rscript ${FILTER_HAPLOTYPES} -i ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.tsv -c ${CUTOFF} &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			Rscript ${FILTER_HAPLOTYPES} -i ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.tsv -c ${CUTOFF} &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 			# --------------- #
 			# II. Copy Number #
@@ -918,22 +918,22 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 			# CHECK: Absent kallisto output
 			if [ ! -f ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.tsv ]; then
-				if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} Missing kallisto output for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt; fi
+				if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} Missing kallisto output for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt; fi
 				printf "${subf}\tFailed\tKallisto could not determined the haplotype abundances\n" >> progress.txt
 				# Clean files/folders
 				CleanFiles ${subf} ${INPUT_FOLDER} ${KEEPF}
 				# Date
-				date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+				date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 				echo ""
 				continue
 			fi
 
 			if [ ${VERBOSE} -eq 2 ]; then printf "Integration; "; fi
 			# Log
-			printf "\n\n### Integration ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			printf "\n\n### Integration ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 			# Integrate step I and II
-			Rscript ${INTEGRATION} -r ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.tsv -c ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv -i ${subf} -m "multiple" &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			Rscript ${INTEGRATION} -r ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.tsv -c ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv -i ${subf} -m "multiple" &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 			# ---------------- #
 			# IV. Fingerprints #
@@ -941,12 +941,12 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 			# CHECK: Absent integration output
 			if [ ! -f ${OUTPUT_FOLDER}/60-Integration/${subf}/integration.tsv ]; then
-				if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} Missing integration output for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt; fi
+				if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} Missing integration output for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt; fi
 				printf "${subf}\tFailed\tIntegration could not be performed\n" >> progress.txt
 				# Clean files/folders
 				CleanFiles ${subf} ${INPUT_FOLDER} ${KEEPF}
 				# Date
-				date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+				date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 				echo ""
 				continue
 			fi
@@ -975,13 +975,13 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 			if [ ${VERBOSE} -eq 2 ]; then printf "Integration [unique]; "; fi
 			# Log
-			printf "\n\n### Integration ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			printf "\n\n### Integration ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 			# Create folder
 			mkdir -p ${OUTPUT_FOLDER}/60-Integration/${subf}
 
 			# Integrate only step II 
-			Rscript ${INTEGRATION} -r "None" -c ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv -i ${subf} -m 'unique' &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			Rscript ${INTEGRATION} -r "None" -c ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv -i ${subf} -m 'unique' &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 			# ---------------- #
 			# IV. Fingerprints #
@@ -1007,13 +1007,13 @@ for subf in $(ls ${INPUT_FOLDER}); do
 		if [ ${VERBOSE} -eq 2 ]; then printf "Abundance ratio; "; fi
 
 		# Kallisto
-		printf "\n\n### Kallisto ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-		kallisto index -i ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta.idx ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
-		kallisto quant -i ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta.idx -o ${OUTPUT_FOLDER}/60-Integration/${subf} ${INPUT_FOLDER}/${subf}/${subf}_R1.fastq.gz ${INPUT_FOLDER}/${subf}/${subf}_R2.fastq.gz -t ${THREADS} &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		printf "\n\n### Kallisto ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+		kallisto index -i ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta.idx ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
+		kallisto quant -i ${OUTPUT_FOLDER}/20-Alignment/${subf}/${subf}.fasta.idx -o ${OUTPUT_FOLDER}/60-Integration/${subf} ${INPUT_FOLDER}/${subf}/${subf}_R1.fastq.gz ${INPUT_FOLDER}/${subf}/${subf}_R2.fastq.gz -t ${THREADS} &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 		# Filter haplotypes
 		cp ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.tsv ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.orig.tsv
-		Rscript ${FILTER_HAPLOTYPES} -i ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.tsv -c ${CUTOFF} &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		Rscript ${FILTER_HAPLOTYPES} -i ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.tsv -c ${CUTOFF} &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 		# --------------- #
 		# II. Copy Number #
@@ -1028,22 +1028,22 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 		# CHECK: Absent kallisto output
 		if [ ! -f ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.tsv ]; then
-			if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} Missing kallisto output for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt; fi
+			if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} Missing kallisto output for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt; fi
 			printf "${subf}\tFailed\tKallisto could not determined the haplotype abundances\n" >> progress.txt
 			# Clean files/folders
 			CleanFiles ${subf} ${INPUT_FOLDER} ${KEEPF}
 			# Date
-			date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 			echo ""
 			continue
 		fi
 
 		if [ ${VERBOSE} -eq 2 ]; then printf "Integration; "; fi
 		# Log
-		printf "\n\n### Integration ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		printf "\n\n### Integration ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 		# Integrate step I and II
-		Rscript ${INTEGRATION} -r ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.tsv -c ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv -i ${subf} -m "multiple" &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		Rscript ${INTEGRATION} -r ${OUTPUT_FOLDER}/60-Integration/${subf}/abundance.tsv -c ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv -i ${subf} -m "multiple" &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 		# ---------------- #
 		# IV. Fingerprints #
@@ -1051,12 +1051,12 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 		# CHECK: Absent integration output
 		if [ ! -f ${OUTPUT_FOLDER}/60-Integration/${subf}/integration.tsv ]; then
-			if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} Missing integration output for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt; fi
+			if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} Missing integration output for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt; fi
 			printf "${subf}\tFailed\tIntegration could not be performed\n" >> progress.txt
 			# Clean files/folders
 			CleanFiles ${subf} ${INPUT_FOLDER} ${KEEPF}
 			# Date
-			date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+			date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 			echo ""
 			continue
 		fi
@@ -1086,13 +1086,13 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 		if [ ${VERBOSE} -eq 2 ]; then printf "Integration [unique]; "; fi
 		# Log
-		printf "\n\n### Integration ###\n\n" >> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		printf "\n\n### Integration ###\n\n" >> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 		# Create folder
 		mkdir -p ${OUTPUT_FOLDER}/60-Integration/${subf}
 
 		# Integrate only step II 
-		Rscript ${INTEGRATION} -r "None" -c ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv -i ${subf} -m 'unique' &>> ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+		Rscript ${INTEGRATION} -r "None" -c ${OUTPUT_FOLDER}/60-Integration/${subf}/copy_number.tsv -i ${subf} -m 'unique' &>> ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 
 		# ---------------- #
 		# IV. Fingerprints #
@@ -1103,7 +1103,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 
 	else
 		# Absent variant file
-		if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} VCF file missing for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt; fi
+		if [ ${VERBOSE} -eq 2 ]; then printf "\n${yellow}WARNING:${normal} VCF file missing for ${subf}. Computation will be skipped.\n" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt; fi
 		continue
 	fi
 
@@ -1116,7 +1116,7 @@ for subf in $(ls ${INPUT_FOLDER}); do
 	# ----------------- #
 
 	CleanFiles ${subf} ${INPUT_FOLDER} ${KEEPF}
-	date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logsmain/log_${subf}.txt
+	date "+end time: %d/%m/%Y - %H:%M:%S" | tee -a ${OUTPUT_FOLDER}/01-Logs/main/log_${subf}.txt
 	echo ""
 done
 
