@@ -35,8 +35,17 @@ The pipeline depends on:
 
 __Conda:__
 
-The conda environment is supplemented in the repository. You can create the environment using `mamba env create -f SyFi.yml`. Otherwise, you can try creating your own environment using running the following code:
+**Recommended**: The conda environment is supplemented in the repository. You can create the environment using `mamba env create -f SyFi.yml`.
 
+```
+wget https://github.com/adriangeerre/SyFi/raw/refs/heads/master/SyFi.yml
+ls SyFi.yml
+conda env create -n SyFi --file SyFi.yml
+conda activate SyFi
+conda deactivate
+```
+
+Otherwise, you can try creating your own environment by getting a copy of Qiime2, and then adding the software dependencies yourself, using running the following code:
 ```
 conda env create -n SyFi --file https://data.qiime2.org/distro/core/qiime2-2022.11-py38-linux-conda.yml
 
