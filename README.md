@@ -138,7 +138,8 @@ The results are currently saved inside of the working directory.
 The default (minimum; k=0) output of SyFi consist of:
 - progress.txt
 - Summary.tsv
-- 01-Logs/{module}/log_*{strain}.txt
+- 01-Logs/main/log_*{strain}.txt
+- (or) 01-Logs/amplicon/log_{DD-MM-YYYY_HH-MM-SS}.txt
 - 10-Blast/*{strain}*.tsv
 - 11-Sequences/*{strain}*/*{strain}*.fasta
 - 20-Alignment/*{strain}*/*{strain}*.fasta
