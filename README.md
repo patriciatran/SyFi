@@ -8,7 +8,7 @@ SyFi is divided into three sequential modules:
 - **Amplicon:** This pipeline retrieves amplicon fingerprints from the gene fingerprints from the first module using in silico primers.
 - **Quant:** This pipeline takes the results from the first module and quantify the fingerprint abundance from amplicon sequencing data
 
-SyFi amplicon and quant can be run without genomic reads as input. Please check SyFi_without_genomic_reads.md if this is the case.
+SyFi amplicon and quant can be run without genomic reads as input. Please check [SyFi_without_genomic_reads.md](./SyFi_without_genomic_reads.md) if this is the case.
 
 ## Dependencies
 
@@ -47,6 +47,8 @@ mamba install -c conda-forge bioconda::salmon bioconda::spades=3.15.5 bioconda::
 ```
 SyFi's second module (SyFi amplicon) makes use of Qiime2 to *in silico* extract the amplicon sequences from the SyFi-generated haplotypes, which are subsequently used to build the amplicon fingerprint. For that reason Qiime2 is first installed in the SyFi environment before installing all other remaining packages. 
 
+Depending on your compute set-up, you might also need to install the tools bc (basic calculator).
+
 ### Executable software
 
 For the installation of GATK, we downloaded the pre-compile software from their Github site. In the following code we use the *{SOFTWARE_FOLDER_PATH}* variable to define a potential software folder. Please, modify the code with your own folder path.
@@ -73,6 +75,7 @@ unzip SyFi_v1.0.zip
 echo 'export PATH="{SOFTWARE_FOLDER_PATH}/SyFi_v1.0/:$PATH"' >> $HOME/.bashrc
 ```
 
+
 ### Usage
 
 ```
@@ -92,7 +95,7 @@ Other:
 
 ### Input
 
-SyFi main assumes that the genomes and reads are organized in sub-folders inside of the input folder (-i | --input-folder). Each sub-folder should contain the genome (.fasta) and the reads (.fastq.gz). 
+SyFi main assumes that the genomes and reads are organized in sub-folders inside of the input folder (-i | --input-folder). Each sub-folder should contain the genome (`.fasta`) and the reads (`.fastq.gz`). 
 
 ```
 For example:
@@ -110,9 +113,9 @@ For example:
 
 ```
 
-SyFi main loops through the samples of the folder and runs the steps in sequential order. It will run each sample one time and categorize it in *Success*, *Skipped* or *Failed*. Once, it runs over all samples, the option "-f | --force" must be used to re-run the sample through SyFi steps.
+SyFi main loops through the samples of the folder and runs the steps in sequential order. It will run each sample one time and categorize it in *Success*, *Skipped* or *Failed*. Once, it runs over all samples, the option `-f | --force` must be used to re-run the sample through SyFi steps.
 
-SyFi quant assumes that the SynCom-inoculated microbiome samples are organized in sub-folders inside of the read input folder (-i | --read-folder). Each sub-folder should contain the single or paired-end reads (.fastq.gz). 
+SyFi quant assumes that the SynCom-inoculated microbiome samples are organized in sub-folders inside of the read input folder (`-i | --read-folder`). Each sub-folder should contain the single or paired-end reads (`.fastq.gz`). 
 
 ```
 For example:
@@ -130,8 +133,12 @@ For example:
 
 ### Output
 
-The default (minimum; k=0) output of SyFi consist of:
+The results are currently saved inside of the working directory.
 
+The default (minimum; k=0) output of SyFi consist of:
+- progress.txt
+- Summary.tsv
+- 01-Logs/{module}/log_*{strain}.txt
 - 10-Blast/*{strain}*.tsv
 - 11-Sequences/*{strain}*/*{strain}*.fasta
 - 20-Alignment/*{strain}*/*{strain}*.fasta
