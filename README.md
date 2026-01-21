@@ -139,7 +139,7 @@ The default (minimum; k=0) output of SyFi consist of:
 - 30-VariantCalling/*{strain}*/variants/*{strain}*.vcf.gz
 - 40-Phasing/*{strain}*/*{strain}*_assembly_h *{strain}*.fasta
 - 40-Phasing/*{strain}*/*{strain}*_phased.vcf.gz
-- 50-haplotypes/*{strain}*/clean\_*{strain}*\_haplotypes.fasta
+- 50-Haplotypes/*{strain}*/clean\_*{strain}*\_haplotypes.fasta
 - 60-Integration/*{strain}*/abundance.tsv
 - 60-Integration/*{strain}*/copy_number.tsv
 - 60-Integration/*{strain}*/integration.tsv
