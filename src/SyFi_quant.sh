@@ -152,6 +152,18 @@ while [[ $# -gt 0 ]]; do
 			VERBOSE="$2"
 			shift 2
 			;;
+		-h|--help)
+			usage
+			exit
+			;;
+		--citation)
+			citation
+			exit
+			;;
+		--folder_structure)
+			folder_structure
+			exit
+			;;
 		*)
 			echo "Unknown parameter: $1"
 			usage

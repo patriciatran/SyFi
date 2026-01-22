@@ -155,6 +155,14 @@ while [[ $# -gt 0 ]]; do
 			FORCE="$2"
 			shift 2
 			;;
+		-h|--help)
+			usage
+			exit
+			;;
+		--citation)
+			citation
+			exit
+			;;
 		*)
 			echo "Unknown parameter: $1"
 			usage

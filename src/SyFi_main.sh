@@ -98,7 +98,7 @@ function usage()
 	printf "\n"
 	echo "# Computation:"
 	echo "  -t | --threads          Number of threads (default: 1)."
-	echo "  -m | --memory           Memory in GBs (default: 8GB)."
+	echo "  -m | --memory           Memory in GBs (default: 8)."
 	printf "\n"
 	echo "# Output options:"
 	echo "  -k | --keep-files       Keep temporary files [0: Minimum, 1: BAM's, or 2: All] (default: 0)."
@@ -162,6 +162,14 @@ while [[ $# -gt 0 ]]; do
 			CUTOFF="$2"
 			shift 2
 			;;
+		--fasta-extension)
+			FAEXT="$2"
+			shift 2
+			;;
+		--fastq-extension)
+			FQEXT="$2"
+			shift 2
+			;;
 		-t|--threads)
 			THREADS="$2"
 			shift 2
@@ -184,6 +192,14 @@ while [[ $# -gt 0 ]]; do
 			;;
 		-h|--help)
 			usage
+			exit
+			;;
+		--citation)
+			citation
+			exit
+			;;
+		--folder-structure)
+			folder_structure
 			exit
 			;;
 		*)

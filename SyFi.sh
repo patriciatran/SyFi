@@ -134,6 +134,10 @@ case $1 in
 		shift
 		quant_module "$@"
 		;;
+	structure)
+		folder_structure
+		exit
+		;;
 	help|-h|--help)
 		usage
 		;;
